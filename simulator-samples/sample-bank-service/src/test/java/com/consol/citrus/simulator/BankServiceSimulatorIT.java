@@ -16,86 +16,63 @@
 
 package com.consol.citrus.simulator;
 
-import com.consol.citrus.annotations.CitrusTest;
-import com.consol.citrus.dsl.testng.TestNGCitrusTestDesigner;
-import com.consol.citrus.http.client.HttpClient;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
+
+import com.consol.citrus.simulator.config.SSLRestTemplateConfiguration;
+import com.consol.citrus.simulator.sample.BankServiceSimulator;
 import com.consol.citrus.simulator.sample.model.BankAccount;
 import com.consol.citrus.simulator.sample.model.CalculateIbanResponse;
 import com.consol.citrus.simulator.sample.model.ValidateIbanResponse;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.testng.annotations.Test;
 
-@Test
-public class BankServiceSimulatorIT extends TestNGCitrusTestDesigner {
+@Import({ SSLRestTemplateConfiguration.class })
+@SpringBootTest(classes = { BankServiceSimulator.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
+public class BankServiceSimulatorIT extends AbstractTestNGSpringContextTests {
 
-    /**
-     * Test Http REST client
-     */
+    @LocalServerPort
+    private int localServerPort;
+
     @Autowired
-    @Qualifier("simulatorHttpClientEndpoint")
-    private HttpClient simulatorClient;
+    private RestTemplate sslRestTemplate;
 
-    /**
-     * Sends a hello request to server expecting positive response message.
-     */
-    @CitrusTest
-    public void testCalculate() {
-        http().client(simulatorClient)
-                .send()
-                .get("/services/rest/bank")
-                .queryParam("sortCode", "12345670")
-                .queryParam("accountNumber", "0006219653")
-        ;
+    @Test
+    public void testCalculate() throws IOException {
+        String uri = UriComponentsBuilder
+                .fromUriString(String.format("https://localhost:%s/services/rest/bank", localServerPort))
+                .queryParam("sortCode", "12345670").queryParam("accountNumber", "0006219653").toUriString();
 
-        http().client(simulatorClient)
-                .receive()
-                .response(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-                .payload(CalculateIbanResponse.builder()
-                        .bankAccount(BankAccount.builder()
-                                .iban("DE92123456700006219653")
-                                .bic("ABCDEFG5670")
-                                .bank("The Wealthy ABC bank")
-                                .sortCode("12345670")
-                                .accountNumber("0006219653")
-                                .build()
-                        )
-                        .build().asJson()
-                )
-        ;
+        CalculateIbanResponse actual = sslRestTemplate.getForObject(uri, CalculateIbanResponse.class);
+
+        CalculateIbanResponse expected = CalculateIbanResponse.builder()
+                .bankAccount(BankAccount.builder().iban("DE92123456700006219653").bic("ABCDEFG5670")
+                        .bank("The Wealthy ABC bank").sortCode("12345670").accountNumber("0006219653").build())
+                .build();
+
+        assertThat(actual, samePropertyValuesAs(expected));
     }
 
-    /**
-     * Sends goodbye request to server expecting positive response message.
-     */
-    @CitrusTest
     public void testValidate() {
-        http().client(simulatorClient)
-                .send()
-                .get("/services/rest/bank")
-                .queryParam("iban", "DE92123456700006219653")
-        ;
+        String uri = UriComponentsBuilder
+                .fromUriString(String.format("https://localhost:%s/services/rest/bank", localServerPort))
+                .queryParam("iban", "DE92123456700006219653").toUriString();
 
-        http().client(simulatorClient)
-                .receive()
-                .response(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-                .payload(ValidateIbanResponse.builder()
-                        .bankAccount(BankAccount.builder()
-                                .iban("DE92123456700006219653")
-                                .bic("ABCDEFG5670")
-                                .bank("The Wealthy ABC bank")
-                                .sortCode("12345670")
-                                .accountNumber("0006219653")
-                                .build()
-                        )
-                        .valid(true)
-                        .build().asJson()
-                )
-        ;
+        ValidateIbanResponse actual = sslRestTemplate.getForObject(uri, ValidateIbanResponse.class);
+
+        ValidateIbanResponse expected = ValidateIbanResponse.builder()
+                .bankAccount(BankAccount.builder().iban("DE92123456700006219653").bic("ABCDEFG5670")
+                        .bank("The Wealthy ABC bank").sortCode("12345670").accountNumber("0006219653").build())
+                .build();
+
+        assertThat(actual, samePropertyValuesAs(expected));
     }
-
 }

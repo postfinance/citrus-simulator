@@ -58,6 +58,19 @@
       <artifactId>testng</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 
   <build>
@@ -96,31 +109,8 @@
               <classifier>executable</classifier>
             </configuration>
           </execution>
-          <execution>
-            <id>pre-integration-test</id>
-            <goals>
-              <goal>start</goal>
-            </goals>
-            <configuration>
-              <skip>${skip.it}</skip>
-              <fork>true</fork>
-              <wait>${spring.boot.start.wait}</wait>
-              <maxAttempts>${spring.boot.start.maxAttempts}</maxAttempts>
-            </configuration>
-          </execution>
-          <execution>
-            <id>post-integration-test</id>
-            <goals>
-              <goal>stop</goal>
-            </goals>
-            <configuration>
-              <skip>${skip.it}</skip>
-              <fork>true</fork>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
-
 </project>

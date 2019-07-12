@@ -3,6 +3,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <artifactId>citrus-simulator-samples</artifactId>
+  <name>${project.artifactId}</name>
+  <packaging>pom</packaging>
 
   <parent>
     <groupId>com.consol.citrus</groupId>
@@ -11,21 +14,14 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>citrus-simulator-samples</artifactId>
-  <name>${project.artifactId}</name>
-
-  <packaging>pom</packaging>
-
   <properties>
-    <spring.boot.start.wait>1000</spring.boot.start.wait>
-    <spring.boot.start.maxAttempts>60</spring.boot.start.maxAttempts>
     <skip.it>false</skip.it>
   </properties>
 
   <modules>
     <module>sample-bank-service</module>
     <module>sample-rest</module>
-    <!--module>sample-swagger</module-->
+	<!-- <module>sample-swagger</module> -->
     <module>sample-ws</module>
     <module>sample-ws-client</module>
     <module>sample-wsdl</module>
