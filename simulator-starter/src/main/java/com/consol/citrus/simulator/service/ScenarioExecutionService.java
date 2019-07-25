@@ -104,87 +104,87 @@ public class ScenarioExecutionService implements DisposableBean, ApplicationList
         return es.getExecutionId();
     }
 
-	private Future<?> startScenarioAsync(Long executionId, String name, SimulatorScenario scenario,
-			List<ScenarioParameter> scenarioParameters) {
-		return executorService.submit(() -> {
-			try {
-				if (scenario instanceof Executable) {
-					if (scenarioParameters != null) {
-						scenarioParameters.forEach(p -> addVariable(scenario, p.getName(), p.getValue()));
-					}
+    private Future<?> startScenarioAsync(Long executionId, String name, SimulatorScenario scenario,
+            List<ScenarioParameter> scenarioParameters) {
+        return executorService.submit(() -> {
+            try {
+                if (scenario instanceof Executable) {
+                    if (scenarioParameters != null) {
+                        scenarioParameters.forEach(p -> addVariable(scenario, p.getName(), p.getValue()));
+                    }
 
-					addVariable(scenario, ScenarioExecution.EXECUTION_ID, executionId);
+                    addVariable(scenario, ScenarioExecution.EXECUTION_ID, executionId);
 
-					((Executable) scenario).execute();
-				} else {
-					TestContext context = citrus.createTestContext();
-					Class<? extends SimulatorScenario> scenarioClass = scenario.getClass();
+                    ((Executable) scenario).execute();
+                } else {
+                    TestContext context = citrus.createTestContext();
+                    Class<? extends SimulatorScenario> scenarioClass = scenario.getClass();
 
-					ReflectionUtils.doWithMethods(scenarioClass,
-							doWithMethod(context, executionId, scenario, scenarioParameters),
-							new UniqueMethodFilter(scenarioClass));
-				}
-				LOG.debug(String.format("Scenario completed: '%s'", name));
-			} catch (Exception e) {
-				LOG.error(String.format("Scenario completed with error: '%s'", name), e);
-			}
-		});
-	}
+                    ReflectionUtils.doWithMethods(scenarioClass,
+                            doWithMethod(context, executionId, scenario, scenarioParameters),
+                            new UniqueMethodFilter(scenarioClass));
+                }
+                LOG.debug(String.format("Scenario completed: '%s'", name));
+            } catch (Exception e) {
+                LOG.error(String.format("Scenario completed with error: '%s'", name), e);
+            }
+        });
+    }
 
-	private MethodCallback doWithMethod(TestContext context, Long executionId, SimulatorScenario scenario,
-			List<ScenarioParameter> scenarioParameters) {
-		return m -> {
-			if (m.getDeclaringClass().equals(SimulatorScenario.class)) {
-				// no need to execute the default run implementations
-				return;
-			}
+    private MethodCallback doWithMethod(TestContext context, Long executionId, SimulatorScenario scenario,
+            List<ScenarioParameter> scenarioParameters) {
+        return m -> {
+            if (m.getDeclaringClass().equals(SimulatorScenario.class)) {
+                // no need to execute the default run implementations
+                return;
+            }
 
-			if (!m.getName().equals("run")) {
-				return;
-			}
+            if (!m.getName().equals("run")) {
+                return;
+            }
 
-			if (m.getParameterCount() != 1) {
-				throw new SimulatorException(
-						"Invalid scenario method signature - expect single method parameter but got: "
-								+ m.getParameterCount());
-			}
+            if (m.getParameterCount() != 1) {
+                throw new SimulatorException(
+                        "Invalid scenario method signature - expect single method parameter but got: "
+                                + m.getParameterCount());
+            }
 
-			Class<?> parameterType = m.getParameterTypes()[0];
-			if (parameterType.equals(ScenarioDesigner.class)) {
-				ScenarioDesigner designer = new ScenarioDesigner(scenario.getScenarioEndpoint(),
-						citrus.getApplicationContext(), context);
-				if (scenarioParameters != null) {
-					scenarioParameters.forEach(p -> designer.variable(p.getName(), p.getValue()));
-				}
+            Class<?> parameterType = m.getParameterTypes()[0];
+            if (parameterType.equals(ScenarioDesigner.class)) {
+                ScenarioDesigner designer = new ScenarioDesigner(scenario.getScenarioEndpoint(),
+                        citrus.getApplicationContext(), context);
+                if (scenarioParameters != null) {
+                    scenarioParameters.forEach(p -> designer.variable(p.getName(), p.getValue()));
+                }
 
-				designer.variable(ScenarioExecution.EXECUTION_ID, executionId);
+                designer.variable(ScenarioExecution.EXECUTION_ID, executionId);
 
-				CitrusAnnotations.injectAll(scenario, citrus, context);
+                CitrusAnnotations.injectAll(scenario, citrus, context);
 
-				ReflectionUtils.invokeMethod(m, scenario, designer);
-				citrus.run(designer.getTestCase(), context);
-			} else if (parameterType.equals(ScenarioRunner.class)) {
-				ScenarioRunner runner = new ScenarioRunner(scenario.getScenarioEndpoint(),
-						citrus.getApplicationContext(), context);
-				if (scenarioParameters != null) {
-					scenarioParameters.forEach(p -> runner.variable(p.getName(), p.getValue()));
-				}
+                ReflectionUtils.invokeMethod(m, scenario, designer);
+                citrus.run(designer.getTestCase(), context);
+            } else if (parameterType.equals(ScenarioRunner.class)) {
+                ScenarioRunner runner = new ScenarioRunner(scenario.getScenarioEndpoint(),
+                        citrus.getApplicationContext(), context);
+                if (scenarioParameters != null) {
+                    scenarioParameters.forEach(p -> runner.variable(p.getName(), p.getValue()));
+                }
 
-				runner.variable(ScenarioExecution.EXECUTION_ID, executionId);
+                runner.variable(ScenarioExecution.EXECUTION_ID, executionId);
 
-				CitrusAnnotations.injectAll(scenario, citrus, context);
+                CitrusAnnotations.injectAll(scenario, citrus, context);
 
-				try {
-					runner.start();
-					ReflectionUtils.invokeMethod(m, scenario, runner);
-				} finally {
-					runner.stop();
-				}
-			} else {
-				throw new SimulatorException("Invalid scenario method parameter type: " + parameterType);
-			}
-		};
-	}
+                try {
+                    runner.start();
+                    ReflectionUtils.invokeMethod(m, scenario, runner);
+                } finally {
+                    runner.stop();
+                }
+            } else {
+                throw new SimulatorException("Invalid scenario method parameter type: " + parameterType);
+            }
+        };
+    }
 
     /**
      * Adds a new variable to the testExecutable using the supplied key an value.
