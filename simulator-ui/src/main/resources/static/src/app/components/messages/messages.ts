@@ -14,8 +14,6 @@ export class MessagesComponent implements OnInit, OnDestroy {
     errorMessage: string;
 
     messageFilter: MessageFilter;
-    inboundState: string = 'active';
-    outboundState: string = 'active';
 
     autoRefreshId: number;
 
@@ -71,21 +69,11 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
     toggleInbound() {
         this.messageFilter.directionInbound = !this.messageFilter.directionInbound;
-        if (this.messageFilter.directionInbound) {
-            this.inboundState = 'active';
-        } else {
-            this.inboundState = '';
-        }
         this.getMessages();
     }
 
     toggleOutbound() {
         this.messageFilter.directionOutbound = !this.messageFilter.directionOutbound;
-        if (this.messageFilter.directionOutbound) {
-            this.outboundState = 'active';
-        } else {
-            this.outboundState = '';
-        }
         this.getMessages();
     }
 

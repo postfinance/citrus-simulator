@@ -1,3 +1,12 @@
+.filterInputSection {
+    display: flex;
+    width: 100%;
+    height: auto;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-right: 0;
+}
+
 .panel-heading div {
     margin-top: -18px;
     font-size: 15px;
@@ -5,4 +14,36 @@
 
 .panel-heading div span{
     margin-left:5px;
+}
+
+.inputField {
+    flex-grow: 2;
+    border: none;
+    font-size: revert !important;
+    vertical-align: middle;
+}
+
+#includeFilters {
+    margin: 0 5px 0 0;
+    vertical-align: middle;
+}
+
+/*@media only screen and (max-width: 1200px) {*/
+/*    .inputSize {*/
+/*        width: 33.48%;*/
+/*    }*/
+/*}*/
+
+/*@media only screen and (max-width: 1000px) {*/
+/*    .inputSize {*/
+/*        width: 33.56%;*/
+/*    }*/
+/*}*/
+.inputField:focus {
+    outline: none !important;
+}
+
+.filterButton {
+    width: 11.2%;
+    margin: 0 1px 0 1px;
 }
