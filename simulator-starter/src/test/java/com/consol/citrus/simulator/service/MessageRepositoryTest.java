@@ -1,39 +1,35 @@
 package com.consol.citrus.simulator.service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import org.junit.jupiter.api.Assertions;
+import com.consol.citrus.simulator.SimulatorAutoConfiguration;
+import com.consol.citrus.simulator.config.SimulatorConfigurationProperties;
+import com.consol.citrus.simulator.model.Message;
+import com.consol.citrus.simulator.model.Message.Direction;
+import com.consol.citrus.simulator.model.MessageFilter;
+import com.consol.citrus.simulator.repository.MessageRepository;
+import org.testng.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import com.consol.citrus.simulator.SimulatorAutoConfiguration;
-import com.consol.citrus.simulator.model.Message;
-import com.consol.citrus.simulator.model.Message.Direction;
-import com.consol.citrus.simulator.repository.MessageRepository;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ContextConfiguration(classes= {SimulatorAutoConfiguration.class})
+@ContextConfiguration(classes = { SimulatorAutoConfiguration.class })
 class MessageRepositoryTest {
 
-    private static final String PAYLOAD = "This is a test message!";
-	private static final String HEADER_NAME = "h1";
+    private static final QueryFilterAdapterFactory QUERY_FILTER_ADAPTER_FACTORY = new QueryFilterAdapterFactory(
+            new SimulatorConfigurationProperties());
 
-	@Autowired
+    private static final String PAYLOAD = "This is a test message!";
+    private static final String HEADER_NAME = "h1";
+    private static final String HEADER_NAME2 = "h2";
+
+    @Autowired
     private MessageService service;
 
     @Autowired
@@ -43,95 +39,97 @@ class MessageRepositoryTest {
     void testFindByHeader() {
         String uid = createTestMessage();
 
-        List<Message> result =
-                        messageRepository
-                                        .findByDateBetweenAndDirectionInAndPayloadContainingIgnoreCase(
-                                                        null, null,
-                                                        Collections.singleton(Direction.INBOUND),
-                                                        null, HEADER_NAME, uid, null);
+        MessageFilter filter = new MessageFilter();
+        filter.setDirectionOutbound(false);
+        filter.setHeaderFilter(HEADER_NAME + ":" + uid);
 
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals(uid, result.get(0).getCitrusMessageId());
-        Assertions.assertEquals(PAYLOAD, result.get(0).getPayload());
+        MessageFilter filterAdapter = QUERY_FILTER_ADAPTER_FACTORY.getQueryAdapter(filter);
+
+        List<Message> result = messageRepository.find(filterAdapter);
+
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(uid, result.get(0).getCitrusMessageId());
+        Assert.assertEquals(PAYLOAD, result.get(0).getPayload());
+
+        filter.setHeaderFilter(HEADER_NAME + ":" + uid + "_3");
+        result = messageRepository.find(filterAdapter);
+        Assert.assertEquals(0, result.size());
+    }
+
+    @Test
+    void testFindByHeaderMulti() {
+        String uid = createTestMessage();
+
+        MessageFilter filter = new MessageFilter();
+        filter.setDirectionOutbound(false);
+        filter.setHeaderFilter(HEADER_NAME + ":" + uid + ";" + HEADER_NAME2 + ":" + uid + "_2");
+
+        MessageFilter filterAdapter = QUERY_FILTER_ADAPTER_FACTORY.getQueryAdapter(filter);
+
+        List<Message> result = messageRepository.find(filterAdapter);
+
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(uid, result.get(0).getCitrusMessageId());
+        Assert.assertEquals(PAYLOAD, result.get(0).getPayload());
+
+        filter.setHeaderFilter(HEADER_NAME + ":" + uid + ";" + HEADER_NAME2 + ":" + uid + "_3");
+
+        result = messageRepository.find(filterAdapter);
+        Assert.assertEquals(0, result.size());
     }
 
     @Test
     void testFindByHeaderLike() {
-    	String innerUid= UUID.randomUUID().toString();
-    	String uid = createTestMessage("PRE"+innerUid+ "POST", PAYLOAD);
-        
-        List<Message> result =
-                        messageRepository
-                                        .findByDateBetweenAndDirectionInAndPayloadContainingIgnoreCase(
-                                                        null, null,
-                                                        Collections.singleton(Direction.INBOUND),
-                                                        null, HEADER_NAME, "%"+innerUid+"%", null);
+        String innerUid = UUID.randomUUID().toString();
+        String uid = createTestMessage("PRE" + innerUid + "POST", PAYLOAD);
 
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals(uid, result.get(0).getCitrusMessageId());
-        Assertions.assertEquals(PAYLOAD, result.get(0).getPayload());
+        MessageFilter filter = new MessageFilter();
+        filter.setDirectionOutbound(false);
+
+        filter.setHeaderFilter(HEADER_NAME + ":" + "%" + innerUid + "%");
+
+        MessageFilter filterAdapter = QUERY_FILTER_ADAPTER_FACTORY.getQueryAdapter(filter);
+        List<Message> result = messageRepository.find(filterAdapter);
+
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(uid, result.get(0).getCitrusMessageId());
+        Assert.assertEquals(PAYLOAD, result.get(0).getPayload());
     }
 
     @Test
     void testFindByPayloadLike() {
-    	String uid= UUID.randomUUID().toString();
-    	String specificPayload = "Pay"+uid+"LOAD";
-    	uid = createTestMessage(uid, specificPayload);
-        
-        List<Message> result =
-                        messageRepository
-                                        .findByDateBetweenAndDirectionInAndPayloadContainingIgnoreCase(
-                                                        null, null,
-                                                        Collections.singleton(Direction.INBOUND),
-                                                        "%"+uid+"%", null, null, null);
+        String uid = UUID.randomUUID().toString();
+        String specificPayload = "Pay" + uid + "LOAD";
+        uid = createTestMessage(uid, specificPayload);
 
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals(uid, result.get(0).getCitrusMessageId());
-        Assertions.assertEquals(specificPayload, result.get(0).getPayload());
+        MessageFilter filter = new MessageFilter();
+        filter.setDirectionOutbound(false);
+        filter.setContainingText("%" + uid + "%");
+
+        MessageFilter filterAdapter = QUERY_FILTER_ADAPTER_FACTORY.getQueryAdapter(filter);
+        List<Message> result = messageRepository.find(filterAdapter);
+
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(uid, result.get(0).getCitrusMessageId());
+        Assert.assertEquals(specificPayload, result.get(0).getPayload());
     }
-    
+
     @Test
     void testFindByPayload() {
-    	String uid = createTestMessage();
-        
-        List<Message> result =
-                        messageRepository
-                                        .findByDateBetweenAndDirectionInAndPayloadContainingIgnoreCase(
-                                                        null, null,
-                                                        Collections.singleton(Direction.INBOUND),
-                                                        PAYLOAD, null, null, null);
-
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals(uid, result.get(0).getCitrusMessageId());
-        Assertions.assertEquals(PAYLOAD, result.get(0).getPayload());
-    }
-
-    /**
-     * Passing only one parameter of headerParamName and headerParamValue should not perform any filtering
-     */
-    @Test
-    void testFindByHeaderInsufficientParams() {
-
         String uid = createTestMessage();
 
-        // If headerParamName or headerParamValue is not provided no filtering should be performed
-        List<Message> result = messageRepository
-                        .findByDateBetweenAndDirectionInAndPayloadContainingIgnoreCase(null, null,
-                                        Collections.singleton(Direction.INBOUND), null, HEADER_NAME, null,
-                                        null);
+        MessageFilter filter = new MessageFilter();
+        filter.setDirectionOutbound(false);
+        filter.setContainingText(PAYLOAD);
 
-        // No filter thus all messages should be returned. Depending on the number of executed tests or savedMessages this should be a value > 0.
-        Assertions.assertTrue(result.size() > 0);
+        MessageFilter filterAdapter = QUERY_FILTER_ADAPTER_FACTORY.getQueryAdapter(filter);
 
-        result = messageRepository.findByDateBetweenAndDirectionInAndPayloadContainingIgnoreCase(
-                        null, null, Collections.singleton(Direction.INBOUND), null, null, uid,
-                        null);
+        List<Message> result = messageRepository.find(filterAdapter);
 
-        // No filter thus all messages should be returned. Depending on the number of executed tests or savedMessages this should be a value > 0.
-        Assertions.assertTrue(result.size() > 0);
-
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(uid, result.get(0).getCitrusMessageId());
+        Assert.assertEquals(PAYLOAD, result.get(0).getPayload());
     }
-
 
     @Test
     void testFindByAllParams() {
@@ -140,54 +138,55 @@ class MessageRepositoryTest {
         Date endSavingDate = now();
 
         // Filter by all valid
-        List<Message> result = messageRepository
-                        .findByDateBetweenAndDirectionInAndPayloadContainingIgnoreCase(
-                                        startSavingDate, endSavingDate,
-                                        Collections.singleton(Direction.INBOUND), PAYLOAD, HEADER_NAME,
-                                        uid, null);
+        MessageFilter filter = new MessageFilter();
+        filter.setFromDate(startSavingDate);
+        filter.setToDate(endSavingDate);
+        filter.setDirectionOutbound(false);
+        filter.setContainingText(PAYLOAD);
+        filter.setHeaderFilter(HEADER_NAME + ":" + uid);
 
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals(PAYLOAD, result.get(0).getPayload());
+        MessageFilter filterAdapter = QUERY_FILTER_ADAPTER_FACTORY.getQueryAdapter(filter);
+        List<Message> result = messageRepository.find(filterAdapter);
 
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(PAYLOAD, result.get(0).getPayload());
     }
 
     @Test
     void testPaging() {
-    	String uniquePayload = "PagingPayload"+UUID.randomUUID().toString();
-    	for (int i=0;i<100;i++) {
-    		createTestMessage(UUID.randomUUID().toString(), uniquePayload);
-    	}
+        String uniquePayload = "PagingPayload" + UUID.randomUUID().toString();
+        for (int i = 0; i < 100; i++) {
+            createTestMessage(UUID.randomUUID().toString(), uniquePayload);
+        }
 
-        PageRequest pr1 = PageRequest.of(0, 33, Sort.Direction.DESC, "date");
-        
-        // Filter by all valid
-        List<Message> result = messageRepository
-                        .findByDateBetweenAndDirectionInAndPayloadContainingIgnoreCase(
-                                        null, null,
-                                        Collections.singleton(Direction.INBOUND), uniquePayload, HEADER_NAME,
-                                        null, pr1);
+        MessageFilter filter = new MessageFilter();
+        filter.setDirectionOutbound(false);
+        filter.setContainingText(uniquePayload);
+        filter.setPageNumber(0);
+        filter.setPageSize(33);
 
-        Assertions.assertEquals(33, result.size());
+        MessageFilter filterAdapter = QUERY_FILTER_ADAPTER_FACTORY.getQueryAdapter(filter);
+        List<Message> result = messageRepository.find(filterAdapter);
 
+        Assert.assertEquals(33, result.size());
     }
 
-	private Date now() {
-		return Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC));
-	}
-    
-	private String createTestMessage() {
-		return createTestMessage(UUID.randomUUID().toString(), PAYLOAD);
-	}
-	
-	private String createTestMessage(String uid, String payload) {
-        		
+    private Date now() {
+        return Date.from(LocalDateTime.now().toInstant(ZoneOffset.UTC));
+    }
+
+    private String createTestMessage() {
+        return createTestMessage(UUID.randomUUID().toString(), PAYLOAD);
+    }
+
+    private String createTestMessage(String uid, String payload) {
+
         Map<String, Object> headers = new HashMap<String, Object>();
         headers.put(HEADER_NAME, uid);
+        headers.put(HEADER_NAME2, uid + "_2");
 
         service.saveMessage(Direction.INBOUND, payload, uid, headers);
 
         return uid;
-	}
-
-
+    }
 }
