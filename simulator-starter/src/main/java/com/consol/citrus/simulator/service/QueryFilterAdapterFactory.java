@@ -19,7 +19,6 @@ public class QueryFilterAdapterFactory {
     private SimulatorConfigurationProperties simulatorConfiguration;
 
     public QueryFilterAdapterFactory(SimulatorConfigurationProperties simulatorConfiguration) {
-        super();
         this.simulatorConfiguration = simulatorConfiguration;
     }
     
