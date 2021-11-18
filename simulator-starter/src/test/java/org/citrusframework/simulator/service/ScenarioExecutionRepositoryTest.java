@@ -35,26 +35,26 @@ import java.util.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ContextConfiguration(classes= {SimulatorAutoConfiguration.class})
+@ContextConfiguration(classes = {SimulatorAutoConfiguration.class})
 public class ScenarioExecutionRepositoryTest {
-    
-    private static final String TEST_SCENARIO= "test-scenario";
+
+    private static final String TEST_SCENARIO = "test-scenario";
 
     private static final SimulatorConfigurationProperties PROPERTIES = new SimulatorConfigurationProperties();
-    
+
     private static final QueryFilterAdapterFactory queryFilterAdapterFactory = new QueryFilterAdapterFactory(PROPERTIES);
-    
+
     private static final String PAYLOAD = "test-payload";
-    
+
     private static final String IN_HEADER_NAME1 = "IH1";
     private static final String IN_HEADER_NAME2 = "IH2";
-    
+
     private static final String OUT_HEADER_NAME1 = "OH1";
     private static final String OUT_HEADER_NAME2 = "OH2";
-        
+
     @Autowired
     private ActivityService activityService;
-    
+
     @Autowired
     private ScenarioExecutionRepository scenarioExecutionRepository;
 
@@ -62,97 +62,97 @@ public class ScenarioExecutionRepositoryTest {
     void testFindByScenarioName() {
         String inUid = UUID.randomUUID().toString();
         String outUid = UUID.randomUUID().toString();
-        
+
         String uniqueScenarioName = TEST_SCENARIO + UUID.randomUUID().toString();
         createTestScenarioExecution(uniqueScenarioName, inUid, PAYLOAD, outUid, PAYLOAD, Status.SUCCESS);
-        
+
         ScenarioExecutionFilter scenarioExecutionFilter = new ScenarioExecutionFilter();
         scenarioExecutionFilter.setScenarioName(uniqueScenarioName);
-        
+
         ScenarioExecutionFilter queryFilter = queryFilterAdapterFactory.getQueryAdapter(scenarioExecutionFilter);
-        
+
         Assert.assertEquals(1, scenarioExecutionRepository.find(queryFilter).size());
     }
-    
+
     @Test
     void testFindByScenarioStatus() {
         String inUid = UUID.randomUUID().toString();
         String outUid = UUID.randomUUID().toString();
-        
+
         String uniqueScenarioName = TEST_SCENARIO + UUID.randomUUID().toString();
-        createTestScenarioExecution(uniqueScenarioName, inUid+1, PAYLOAD, outUid+1, PAYLOAD, Status.SUCCESS);
-        Long failedScenarioExecutionId = createTestScenarioExecution(uniqueScenarioName, inUid+2, PAYLOAD, outUid+2, PAYLOAD, Status.FAILED);
-        
+        createTestScenarioExecution(uniqueScenarioName, inUid + 1, PAYLOAD, outUid + 1, PAYLOAD, Status.SUCCESS);
+        Long failedScenarioExecutionId = createTestScenarioExecution(uniqueScenarioName, inUid + 2, PAYLOAD, outUid + 2, PAYLOAD, Status.FAILED);
+
         ScenarioExecutionFilter scenarioExecutionFilter = new ScenarioExecutionFilter();
         scenarioExecutionFilter.setExecutionStatus(Status.FAILED);
-        
+
         ScenarioExecutionFilter queryFilter = queryFilterAdapterFactory.getQueryAdapter(scenarioExecutionFilter);
-        
+
         List<ScenarioExecution> result = scenarioExecutionRepository.find(queryFilter);
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(failedScenarioExecutionId, result.get(0).getExecutionId());
     }
-    
+
     @Test
     void testFindByHeader() {
         String inUid = UUID.randomUUID().toString();
         String outUid = UUID.randomUUID().toString();
         createTestScenarioExecution(inUid, PAYLOAD, outUid, PAYLOAD);
-        
-        ScenarioExecutionFilter scenarioExecutionFilter = new ScenarioExecutionFilter();
-        scenarioExecutionFilter.setHeaderFilter(IN_HEADER_NAME1+":"+inUid);
 
-        
+        ScenarioExecutionFilter scenarioExecutionFilter = new ScenarioExecutionFilter();
+        scenarioExecutionFilter.setHeaderFilter(IN_HEADER_NAME1 + ":" + inUid);
+
+
         ScenarioExecutionFilter queryFilter = queryFilterAdapterFactory.getQueryAdapter(scenarioExecutionFilter);
-        
+
         Assert.assertEquals(1, scenarioExecutionRepository.find(queryFilter).size());
 
-        scenarioExecutionFilter.setHeaderFilter(IN_HEADER_NAME1+":"+inUid+"mod");
-        
+        scenarioExecutionFilter.setHeaderFilter(IN_HEADER_NAME1 + ":" + inUid + "mod");
+
         Assert.assertEquals(0, scenarioExecutionRepository.find(queryFilter).size());
     }
-    
+
     @Test
     void testFindByHeaderMulti() {
         String inUid = UUID.randomUUID().toString();
         String outUid = UUID.randomUUID().toString();
         createTestScenarioExecution(inUid, PAYLOAD, outUid, PAYLOAD);
-        
+
         ScenarioExecutionFilter scenarioExecutionFilter = new ScenarioExecutionFilter();
-        scenarioExecutionFilter.setHeaderFilter(IN_HEADER_NAME1+":"+inUid+";"+IN_HEADER_NAME2+":"+inUid+"_2");
-        
+        scenarioExecutionFilter.setHeaderFilter(IN_HEADER_NAME1 + ":" + inUid + ";" + IN_HEADER_NAME2 + ":" + inUid + "_2");
+
         ScenarioExecutionFilter queryFilter = queryFilterAdapterFactory.getQueryAdapter(scenarioExecutionFilter);
-        
+
         Assert.assertEquals(1, scenarioExecutionRepository.find(queryFilter).size());
 
-        scenarioExecutionFilter.setHeaderFilter(IN_HEADER_NAME1+":"+inUid+";"+IN_HEADER_NAME2+":"+inUid+"_3");
-        
+        scenarioExecutionFilter.setHeaderFilter(IN_HEADER_NAME1 + ":" + inUid + ";" + IN_HEADER_NAME2 + ":" + inUid + "_3");
+
         Assert.assertEquals(0, scenarioExecutionRepository.find(queryFilter).size());
     }
-    
+
     @Test
     void testFindByPayload() {
         String inUid = UUID.randomUUID().toString();
         String outUid = UUID.randomUUID().toString();
-        String inPayload = PAYLOAD+inUid+"-in";
-        String outPayload = PAYLOAD+outUid+"-out";
-        
+        String inPayload = PAYLOAD + inUid + "-in";
+        String outPayload = PAYLOAD + outUid + "-out";
+
         createTestScenarioExecution(inUid, inPayload, outUid, outPayload);
-        
+
         ScenarioExecutionFilter scenarioExecutionFilter = new ScenarioExecutionFilter();
-        
+
         ScenarioExecutionFilter queryFilter = queryFilterAdapterFactory.getQueryAdapter(scenarioExecutionFilter);
-        
+
         scenarioExecutionFilter.setContainingText(inPayload);
         Assert.assertEquals(1, scenarioExecutionRepository.find(queryFilter).size());
-        
-        scenarioExecutionFilter.setContainingText(inPayload+"mod");
+
+        scenarioExecutionFilter.setContainingText(inPayload + "mod");
         Assert.assertEquals(0, scenarioExecutionRepository.find(queryFilter).size());
-        
+
         scenarioExecutionFilter.setDirectionInbound(false);
         scenarioExecutionFilter.setContainingText(inPayload);
         Assert.assertEquals(0, scenarioExecutionRepository.find(queryFilter).size());
-        
+
         scenarioExecutionFilter.setDirectionInbound(true);
         scenarioExecutionFilter.setContainingText(inPayload);
         Assert.assertEquals(1, scenarioExecutionRepository.find(queryFilter).size());
@@ -165,37 +165,37 @@ public class ScenarioExecutionRepositoryTest {
         scenarioExecutionFilter.setContainingText(outPayload);
         Assert.assertEquals(0, scenarioExecutionRepository.find(queryFilter).size());
     }
-    
+
     @Test
     void testPaging() {
         String uniquePayload = "PagingPayload" + UUID.randomUUID().toString();
         for (int i = 0; i < 100; i++) {
-            createTestScenarioExecution(UUID.randomUUID().toString(), uniquePayload+"-in", UUID.randomUUID().toString(), uniquePayload+"-out");
+            createTestScenarioExecution(UUID.randomUUID().toString(), uniquePayload + "-in", UUID.randomUUID().toString(), uniquePayload + "-out");
         }
 
         ScenarioExecutionFilter scenarioExecutionFilter = new ScenarioExecutionFilter();
         scenarioExecutionFilter.setPageNumber(0);
         scenarioExecutionFilter.setPageSize(33);
-        
+
         ScenarioExecutionFilter queryFilter = queryFilterAdapterFactory.getQueryAdapter(scenarioExecutionFilter);
         List<ScenarioExecution> result = scenarioExecutionRepository.find(queryFilter);
 
         Assert.assertEquals(33, result.size());
     }
-    
+
     @Test
     void testFindByDate() {
 
         Date t1 = new Date();
         String uniquePayload = "FindByDatePayload" + UUID.randomUUID().toString();
         for (int i = 0; i < 100; i++) {
-            createTestScenarioExecution(UUID.randomUUID().toString(), uniquePayload+"-in", UUID.randomUUID().toString(), uniquePayload+"-out");
+            createTestScenarioExecution(UUID.randomUUID().toString(), uniquePayload + "-in", UUID.randomUUID().toString(), uniquePayload + "-out");
         }
 
         Date t2 = new Date();
 
         for (int i = 0; i < 50; i++) {
-            createTestScenarioExecution(UUID.randomUUID().toString(), uniquePayload+"-in", UUID.randomUUID().toString(), uniquePayload+"-out");
+            createTestScenarioExecution(UUID.randomUUID().toString(), uniquePayload + "-in", UUID.randomUUID().toString(), uniquePayload + "-out");
         }
 
         Date t3 = new Date();
@@ -218,34 +218,34 @@ public class ScenarioExecutionRepositoryTest {
         scenarioExecutionFilter.setToDate(t3);
         Assert.assertEquals(50, scenarioExecutionRepository.find(queryFilter).size());
     }
-    
+
     private Long createTestScenarioExecution(String inUid, String inPayload, String outUid, String outPayload) {
         return createTestScenarioExecution(TEST_SCENARIO, inUid, inPayload, outUid, outPayload, Status.SUCCESS);
     }
-    
+
     private Long createTestScenarioExecution(String scenarioName, String inUid, String inPayload, String outUid, String outPayload, Status status) {
-     
+
         Map<String, Object> inHeaders = new HashMap<String, Object>();
         inHeaders.put(IN_HEADER_NAME1, inUid);
-        inHeaders.put(IN_HEADER_NAME2, inUid+"_2");
+        inHeaders.put(IN_HEADER_NAME2, inUid + "_2");
 
         ScenarioExecution scenarioExecution = activityService.createExecutionScenario(scenarioName, Collections.emptySet());
         activityService.saveScenarioMessage(scenarioExecution.getExecutionId(), Direction.INBOUND, inPayload, inUid, inHeaders);
 
         Map<String, Object> outHeaders = new HashMap<String, Object>();
         outHeaders.put(OUT_HEADER_NAME1, outUid);
-        outHeaders.put(OUT_HEADER_NAME2, outUid+"_2");
+        outHeaders.put(OUT_HEADER_NAME2, outUid + "_2");
         activityService.saveScenarioMessage(scenarioExecution.getExecutionId(), Direction.OUTBOUND, outPayload, outUid, outHeaders);
-        
+
         DefaultTestCase testCase = new DefaultTestCase();
         testCase.getVariableDefinitions().put(ScenarioExecution.EXECUTION_ID, scenarioExecution.getExecutionId());
-        
-        if (Status.SUCCESS==status) {
+
+        if (Status.SUCCESS == status) {
             activityService.completeScenarioExecutionSuccess(testCase);
-        } else if (Status.FAILED==status) {
+        } else if (Status.FAILED == status) {
             activityService.completeScenarioExecutionFailure(testCase, null);
-        } 
-        
+        }
+
         return scenarioExecution.getExecutionId();
     }
 }
