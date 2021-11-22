@@ -7,21 +7,19 @@ import org.citrusframework.simulator.model.Message.Direction;
 import org.citrusframework.simulator.model.MessageFilter;
 import org.citrusframework.simulator.repository.MessageRepository;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 
-@RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = { SimulatorAutoConfiguration.class })
-class MessageRepositoryTest {
+class MessageRepositoryTest extends AbstractTestNGSpringContextTests{
 
     private static final QueryFilterAdapterFactory QUERY_FILTER_ADAPTER_FACTORY = new QueryFilterAdapterFactory(
             new SimulatorConfigurationProperties());
@@ -117,11 +115,13 @@ class MessageRepositoryTest {
 
     @Test
     void testFindByPayload() {
-        String uid = createTestMessage();
+        String uid = UUID.randomUUID().toString();
+        String payload = PAYLOAD+" "+uid;
+        uid = createTestMessage(uid, payload);
 
         MessageFilter filter = new MessageFilter();
         filter.setDirectionOutbound(false);
-        filter.setContainingText(PAYLOAD);
+        filter.setContainingText("%"+uid+"%");
 
         MessageFilter filterAdapter = QUERY_FILTER_ADAPTER_FACTORY.getQueryAdapter(filter);
 
@@ -129,7 +129,7 @@ class MessageRepositoryTest {
 
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(uid, result.get(0).getCitrusMessageId());
-        Assert.assertEquals(PAYLOAD, result.get(0).getPayload());
+        Assert.assertEquals(payload, result.get(0).getPayload());
     }
 
     @Test

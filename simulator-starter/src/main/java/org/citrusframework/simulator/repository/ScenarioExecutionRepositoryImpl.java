@@ -2,14 +2,18 @@ package org.citrusframework.simulator.repository;
 
 import org.citrusframework.simulator.model.Message;
 import org.citrusframework.simulator.model.ScenarioExecution;
+import org.citrusframework.simulator.model.ScenarioExecution.Status;
 import org.citrusframework.simulator.model.ScenarioExecutionFilter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder.In;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ScenarioExecutionRepositoryImpl extends AbstractRepository implements ScenarioExecutionRepositoryCustom {
@@ -67,9 +71,10 @@ public class ScenarioExecutionRepositoryImpl extends AbstractRepository implemen
      */
     private void addScenarioStatusPredicate(ScenarioExecutionFilter filter, CriteriaBuilder criteriaBuilder,
             Root<ScenarioExecution> scenarioExecution, List<Predicate> predicates) {
-        if (filter.getExecutionStatus() != null) {
-            predicates.add(criteriaBuilder.equal(scenarioExecution.get("status"),
-                    filter.getExecutionStatus()));
+        if (filter.getExecutionStatus() != null && filter.getExecutionStatus().length>0) {
+            In<Status> inClause = criteriaBuilder.in(scenarioExecution.get("status"));
+            Arrays.stream(filter.getExecutionStatus()).forEach(status->inClause.value(status));
+            predicates.add(inClause);
         }
     }
 

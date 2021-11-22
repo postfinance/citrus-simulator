@@ -23,22 +23,20 @@ import org.citrusframework.simulator.model.ScenarioExecution;
 import org.citrusframework.simulator.model.ScenarioExecution.Status;
 import org.citrusframework.simulator.model.ScenarioExecutionFilter;
 import org.citrusframework.simulator.repository.ScenarioExecutionRepository;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.*;
 
-@RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {SimulatorAutoConfiguration.class})
-public class ScenarioExecutionRepositoryTest {
-
-    private static final String TEST_SCENARIO = "test-scenario";
+public class ScenarioExecutionRepositoryTest extends AbstractTestNGSpringContextTests {
+    
+    private static final String TEST_SCENARIO= "test-scenario";
 
     private static final SimulatorConfigurationProperties PROPERTIES = new SimulatorConfigurationProperties();
 
@@ -84,8 +82,8 @@ public class ScenarioExecutionRepositoryTest {
         Long failedScenarioExecutionId = createTestScenarioExecution(uniqueScenarioName, inUid + 2, PAYLOAD, outUid + 2, PAYLOAD, Status.FAILED);
 
         ScenarioExecutionFilter scenarioExecutionFilter = new ScenarioExecutionFilter();
-        scenarioExecutionFilter.setExecutionStatus(Status.FAILED);
-
+        scenarioExecutionFilter.setExecutionStatus(new Status[] {Status.FAILED});
+        
         ScenarioExecutionFilter queryFilter = queryFilterAdapterFactory.getQueryAdapter(scenarioExecutionFilter);
 
         List<ScenarioExecution> result = scenarioExecutionRepository.find(queryFilter);
