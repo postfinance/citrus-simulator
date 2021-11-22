@@ -8,5 +8,5 @@ import lombok.Data;
 @Data
 public class ScenarioExecutionFilter extends MessageFilter {
     private String scenarioName;
-    private ScenarioExecution.Status executionStatus;
+    private ScenarioExecution.Status[] executionStatus;
 }
