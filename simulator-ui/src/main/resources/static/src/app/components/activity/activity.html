@@ -1,24 +1,52 @@
 <h1 class="page-header"><i class="fa fa-cogs"></i> Activity
     <div class="pull-right">
-        <span class="clickable" title="Refresh Activity" (click)="getActivities()"><i class="fa fa-refresh"></i></span>
+        <span class="clickable action-icon" title="Refresh Activity" (click)="getActivities()"><i class="fa fa-refresh"></i></span>
         <span class="clickable action-icon" title="Clear Activity" (click)="clearActivity()"><i class="fa fa-recycle"></i></span>
     </div>
 </h1>
 
 <hr/>
 
-<div class="input-group" style="display: flex !important;">
-    <div class="input-group-btn form-control filterInputSection">
-        <input [(ngModel)]="inputValue" id="name" type="text" class="nameInputField inputField inputSize" placeholder="Filter By Name">
-        <input [(ngModel)]="inputHeaders" id="headers" type="text" class="headerInputField inputField inputSize" placeholder="Filter By Header" data-toggle="tooltip"
+
+<div style="border: 1px solid #ced4da; border-top: 0;">
+    <div class="input-group">
+        <input [(ngModel)]="inputValue" style="border-top-left-radius: 0px; border-bottom-left-radius: 0px; border-left: 0" id="name" type="text" class="form-control" placeholder="Filter By Name">
+        <input [(ngModel)]="inputHeaders" id="headers" type="text" class="form-control" placeholder="Filter By Header" data-toggle="tooltip"
                data-placement="top" title="Use optional key value pairs to filter the MessageHeaders&#10;Pattern: key1:value1;key2:value2">
-        <input [(ngModel)]="inputIncludeFilterInRequest" id="includeFilters" data-toggle="tooltip" data-placement="top" title="Include the filter options Success, Failed and Active directly in the request" type="checkbox"/>
-        <button type="button" class="btn btn-primary btn-filter {{successState}} filterButton" (click)="toggleSuccess()"><i [class]="successState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Success</button>
-        <button type="button" class="btn btn-primary btn-filter {{failedState}} filterButton" (click)="toggleFailed()"><i [class]="failedState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Failed</button>
-        <button type="button" class="btn btn-primary btn-filter {{activeState}} filterButton" (click)="toggleActive()"><i [class]="activeState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Active</button>
+        <!--        <input [(ngModel)]="inputIncludeFilterInRequest" id="includeFilters" class="form-control" data-toggle="tooltip" data-placement="top" title="Include the filter options Success, Failed and Active directly in the request" type="checkbox"/>-->
+        <button type="button" class="btn btn-primary filter btn-filter {{successState}} filterButton" (click)="toggleSuccess()"><i [class]="successState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Success</button>
+        <button type="button" class="btn btn-primary filter btn-filter {{failedState}} filterButton" (click)="toggleFailed()"><i [class]="failedState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Failed</button>
+        <button type="button" class="btn btn-primary filter btn-filter{{activeState}} filterButton" (click)="toggleActive()"><i [class]="activeState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Active</button>
+    </div>
+    <div class="date-section">
+        <div class="date-box">
+            <mat-form-field color="primary" class="date-field" appearance="fill">
+                <mat-label>Date from</mat-label>
+                <input matInput [matDatepicker]="dateFrom">
+                <mat-datepicker-toggle matSuffix [for]="dateFrom"></mat-datepicker-toggle>
+                <mat-datepicker #dateFrom></mat-datepicker>
+            </mat-form-field>
+            <div style="display: flex;">
+                <input matInput class="timepicker" [ngxTimepicker]="timeFrom" readonly>
+                <ngx-material-timepicker-toggle [for]="timeFrom"></ngx-material-timepicker-toggle>
+                <ngx-material-timepicker #timeFrom></ngx-material-timepicker>
+            </div>
+        </div>
+        <div class="date-box">
+            <mat-form-field class="date-field" appearance="fill">
+                <mat-label>Date from</mat-label>
+                <input matInput [matDatepicker]="dateTo">
+                <mat-datepicker-toggle matSuffix [for]="dateTo"></mat-datepicker-toggle>
+                <mat-datepicker #dateTo></mat-datepicker>
+            </mat-form-field>
+            <div style="display: flex;">
+                <input matInput class="timepicker" [ngxTimepicker]="timeTo" readonly>
+                <ngx-material-timepicker-toggle [for]="timeTo"></ngx-material-timepicker-toggle>
+                <ngx-material-timepicker #timeTo></ngx-material-timepicker>
+            </div>
+        </div>
     </div>
 </div>
-
 <div class="navigation space-top-30">
     <div class="btn-group pull-right">
         <button type="button" class="btn btn-default pageSizeCounter">{{pageSize}}</button>

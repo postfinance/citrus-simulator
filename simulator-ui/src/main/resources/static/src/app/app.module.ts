@@ -23,8 +23,12 @@ import {ExecutionStatusPipe} from "./pipes/execution-status-pipe";
 import {TruncatePipe} from "./pipes/truncate-pipe";
 import {ScenarioNamePipe} from "./pipes/scenario-name-pipe";
 import {ActivityFilterPipe} from "./pipes/activity-filter-pipe";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {CommonModule} from "@angular/common";
 import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
-import {Animation} from "@angular/a"
+import {MatNativeDateModule} from "@angular/material/core";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {MatInputModule} from "@angular/material/input";
 
 @NgModule({
     imports: [
@@ -33,7 +37,13 @@ import {Animation} from "@angular/a"
         FormsModule,
         ReactiveFormsModule,
         AppRoutingModule,
-        NgxMaterialTimepickerModule
+        CommonModule,
+        BrowserAnimationsModule,
+        MatNativeDateModule,
+        ReactiveFormsModule,
+        NgxMaterialTimepickerModule,
+        MatDatepickerModule,
+        MatInputModule
     ],
     declarations: [
         AppComponent,
