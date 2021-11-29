@@ -13,7 +13,7 @@
 </div>
 
 <div class="table-responsive space-top-30">
-    <scenario-execution-list [scenarioExecutions]="scenarioExecutions | activityFilter : '' : includeSuccess : includeFailed : includeActive" [hideName]="true"></scenario-execution-list>
+    <scenario-execution-list [scenarioExecutions] [hideName]="true"></scenario-execution-list>
 </div>
 
 <div *ngIf="errorMessage" class="alert alert-danger" role="alert">

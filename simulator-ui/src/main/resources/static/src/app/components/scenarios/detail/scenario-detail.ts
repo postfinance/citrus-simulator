@@ -4,6 +4,7 @@ import {Location} from "@angular/common";
 import {Scenario, ScenarioExecution, ScenarioParameter} from "../../../model/scenario";
 import {ScenarioService} from "../../../services/scenario-service";
 import {ActivityService} from "../../../services/activity-service";
+import {ScenarioExecutionFilter} from "../../../model/filter";
 
 @Component({
     moduleId: module.id,
@@ -19,13 +20,11 @@ export class ScenarioDetailComponent implements OnInit {
     scenarioExecutions: ScenarioExecution[];
     errorMessage: string;
 
-    inputValue: string = '';
-    includeSuccess: boolean = true;
-    includeFailed: boolean = true;
-    includeActive: boolean = true;
-    successState: string = 'active';
-    failedState: string = 'active';
-    activeState: string = 'active';
+    successState: boolean = true;
+    failedState: boolean = true;
+    activeState: boolean = true;
+
+    scenarioExecutionFilter: ScenarioExecutionFilter;
 
     constructor(private scenarioService: ScenarioService,
                 private activityService: ActivityService,
@@ -35,9 +34,9 @@ export class ScenarioDetailComponent implements OnInit {
     }
 
     ngOnInit() {
-        let name = this.route.snapshot.params['name'];
-        this.getScenario(name);
-        this.getScenarioExecutions(name);
+        this.scenarioExecutionFilter.scenarioName = this.route.snapshot.params['name'];
+        this.getScenario(this.scenarioExecutionFilter.scenarioName);
+        this.getScenarioExecutions(this.scenarioExecutionFilter.scenarioName);
     }
 
     getScenario(name: string) {
@@ -64,7 +63,8 @@ export class ScenarioDetailComponent implements OnInit {
 
 
     getScenarioExecutions(name: string) {
-        this.activityService.getScenarioExecutionsByScenarioName(name)
+        this.scenarioExecutionFilter.scenarioName = name;
+        this.activityService.getScenarioExecutions(this.scenarioExecutionFilter)
             .subscribe({
                 next: (scenarioExecutions) => this.scenarioExecutions = scenarioExecutions,
                 error: (error) => this.errorMessage = error.toString()
@@ -99,30 +99,15 @@ export class ScenarioDetailComponent implements OnInit {
     }
 
     toggleSuccess() {
-        this.includeSuccess = !this.includeSuccess;
-        if(this.includeSuccess) {
-            this.successState = 'active';
-        } else {
-            this.successState = '';
-        }
+        this.successState = !this.successState;
     }
 
     toggleFailed() {
-        this.includeFailed = !this.includeFailed;
-        if(this.includeFailed) {
-            this.failedState = 'active';
-        } else {
-            this.failedState = '';
-        }
+        this.failedState = !this.failedState;
     }
 
     toggleActive() {
-        this.includeActive = !this.includeActive;
-        if(this.includeActive) {
-            this.activeState = 'active';
-        } else {
-            this.activeState = '';
-        }
+        this.activeState = !this.activeState;
     }
 
 }

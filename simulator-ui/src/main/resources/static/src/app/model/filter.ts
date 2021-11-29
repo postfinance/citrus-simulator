@@ -9,6 +9,19 @@ export class MessageFilter {
     }
 }
 
+export class ScenarioExecutionFilter {
+    constructor(
+        public fromDate: string,
+        public toDate: string,
+        public pageNumber: number,
+        public pageSize: number,
+        public headerFilter: string,
+        public scenarioName: string,
+        public executionStatus: string[],
+    ) {
+    }
+}
+
 export class ScenarioFilter {
     constructor(public name: string) {
     }

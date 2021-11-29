@@ -111,6 +111,8 @@ tr td {
 
 .action-icon {
     padding: 3px 3px;
+    width: 25px;
+    height: 25px;
 }
 
 .pageSizeCounter {
