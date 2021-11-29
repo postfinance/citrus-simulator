@@ -23,6 +23,8 @@ import {ExecutionStatusPipe} from "./pipes/execution-status-pipe";
 import {TruncatePipe} from "./pipes/truncate-pipe";
 import {ScenarioNamePipe} from "./pipes/scenario-name-pipe";
 import {ActivityFilterPipe} from "./pipes/activity-filter-pipe";
+import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
+import {Animation} from "@angular/a"
 
 @NgModule({
     imports: [
@@ -30,7 +32,8 @@ import {ActivityFilterPipe} from "./pipes/activity-filter-pipe";
         HttpClientModule,
         FormsModule,
         ReactiveFormsModule,
-        AppRoutingModule
+        AppRoutingModule,
+        NgxMaterialTimepickerModule
     ],
     declarations: [
         AppComponent,

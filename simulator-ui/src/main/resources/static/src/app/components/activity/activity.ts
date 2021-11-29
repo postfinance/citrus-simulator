@@ -2,23 +2,29 @@ import {Component, OnInit, AfterViewInit, OnDestroy} from "@angular/core";
 import {ActivatedRoute} from "@angular/router";
 import {ActivityService} from "../../services/activity-service";
 import {ScenarioExecution} from "../../model/scenario";
+import {MessageFilter, ScenarioExecutionFilter} from "../../model/filter";
 
 @Component({
     moduleId: module.id,
     templateUrl: 'activity.html',
     styleUrls: ['activity.css'],
+    selector: "app-root",
 })
 export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
     scenarioExecutions: ScenarioExecution[];
+    scenarioExecutionFilter: ScenarioExecutionFilter;
     errorMessage: string;
 
     inputValue: string = '';
-    includeSuccess: boolean = true;
-    includeFailed: boolean = true;
-    includeActive: boolean = true;
-    successState: string = 'active';
-    failedState: string = 'active';
-    activeState: string = 'active';
+    inputHeaders: string = '';
+    inputIncludeFilterInRequest: boolean = false;
+
+    successState: boolean = true;
+    failedState: boolean = true;
+    activeState: boolean = true;
+
+    dateTimeFrom: any;
+    dateTimeTo: any;
 
     pageSize = 25;
     page = 0;
@@ -30,7 +36,8 @@ export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngOnInit() {
-        this.getActivity();
+        this.scenarioExecutionFilter = this.initScenarioExecutionFilter();
+        this.getActivities();
         let statusFilter = this.route.snapshot.params['status'];
         if(statusFilter) {
             if (statusFilter.toLowerCase().indexOf("success") > -1) {
@@ -46,7 +53,7 @@ export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
         this.autoRefreshId = window.setInterval(() => { if (this.page == 0 && this.pageSize < 250) {
-            this.getActivity();
+            this.getActivities();
         } }, 2000);
     }
 
@@ -57,60 +64,58 @@ export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
     ngAfterViewInit(): void {
     }
 
-    getActivity() {
-        this.activityService.getScenarioExecutions(this.page, this.pageSize)
-            .subscribe({
-                next: (scenarioExecutions) => this.scenarioExecutions = scenarioExecutions,
-                error: (error) => this.errorMessage = <any>error
-            });
+    getActivities() {
+        this.buildLocalScenarioExecutionFilter();
+        this.activityService.getScenarioExecutions(this.scenarioExecutionFilter).subscribe(
+            scenarioExecutions => this.scenarioExecutions = scenarioExecutions,
+            error => this.errorMessage = <any>error
+        );
+    }
+
+    buildLocalScenarioExecutionFilter() {
+        this.scenarioExecutionFilter.fromDate = this.dateTimeFrom;
+        this.scenarioExecutionFilter.toDate = this.dateTimeTo;
+        this.scenarioExecutionFilter.pageSize = this.pageSize;
+        this.scenarioExecutionFilter.pageNumber = this.page;
+        this.scenarioExecutionFilter.scenarioName = this.inputValue;
+        this.scenarioExecutionFilter.headers = this.inputHeaders;
+        this.scenarioExecutionFilter.states = ["success:" + this.successState ,"failed:" + this.failedState,"active:" + this.activeState];
     }
 
     clearActivity() {
-        this.activityService.clearScenarioExecutions()
-            .subscribe({
-                next: (success) => this.getActivity(),
-                error: (error) => this.errorMessage = <any>error
-            });
+        this.activityService.clearScenarioExecutions().subscribe({
+            next:success => this.getActivities(),
+            error:error => this.errorMessage = <any>error
+        });
     }
 
     prev() {
         if (this.page > 0) {
             this.page--;
-            this.getActivity();
+            this.getActivities();
         }
     }
 
     next() {
         if (this.scenarioExecutions && this.scenarioExecutions.length) {
             this.page++;
-            this.getActivity();
+            this.getActivities();
         }
     }
 
     toggleSuccess() {
-        this.includeSuccess = !this.includeSuccess;
-        if(this.includeSuccess) {
-            this.successState = 'active';
-        } else {
-            this.successState = '';
-        }
+        this.successState = !this.successState;
     }
 
     toggleFailed() {
-        this.includeFailed = !this.includeFailed;
-        if(this.includeFailed) {
-            this.failedState = 'active';
-        } else {
-            this.failedState = '';
-        }
+        this.failedState = !this.failedState;
     }
 
     toggleActive() {
-        this.includeActive = !this.includeActive;
-        if(this.includeActive) {
-            this.activeState = 'active';
-        } else {
-            this.activeState = '';
-        }
+        this.activeState = !this.activeState;
+    }
+
+    initScenarioExecutionFilter(): ScenarioExecutionFilter {
+        return new ScenarioExecutionFilter(null, null, 0, 25, '', '', [] );
     }
 }

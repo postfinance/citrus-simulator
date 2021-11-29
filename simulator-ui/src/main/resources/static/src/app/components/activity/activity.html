@@ -1,18 +1,21 @@
 <h1 class="page-header"><i class="fa fa-cogs"></i> Activity
     <div class="pull-right">
-        <span class="clickable action-icon" title="Refresh Activity" (click)="getActivity()"><i class="fa fa-refresh"></i></span>
+        <span class="clickable" title="Refresh Activity" (click)="getActivities()"><i class="fa fa-refresh"></i></span>
         <span class="clickable action-icon" title="Clear Activity" (click)="clearActivity()"><i class="fa fa-recycle"></i></span>
     </div>
 </h1>
 
 <hr/>
 
-<div class="input-group">
-    <input [(ngModel)]="inputValue" type="text" class="form-control" placeholder="Filter By Name">
-    <div class="input-group-btn">
-        <button type="button" class="btn btn-primary filter btn-filter {{successState}}" (click)="toggleSuccess()"><i [class]="successState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Success</button>
-        <button type="button" class="btn btn-primary filter btn-filter {{failedState}}" (click)="toggleFailed()"><i [class]="failedState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Failed</button>
-        <button type="button" class="btn btn-primary filter btn-filter {{activeState}}" (click)="toggleActive()"><i [class]="activeState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Active</button>
+<div class="input-group" style="display: flex !important;">
+    <div class="input-group-btn form-control filterInputSection">
+        <input [(ngModel)]="inputValue" id="name" type="text" class="nameInputField inputField inputSize" placeholder="Filter By Name">
+        <input [(ngModel)]="inputHeaders" id="headers" type="text" class="headerInputField inputField inputSize" placeholder="Filter By Header" data-toggle="tooltip"
+               data-placement="top" title="Use optional key value pairs to filter the MessageHeaders&#10;Pattern: key1:value1;key2:value2">
+        <input [(ngModel)]="inputIncludeFilterInRequest" id="includeFilters" data-toggle="tooltip" data-placement="top" title="Include the filter options Success, Failed and Active directly in the request" type="checkbox"/>
+        <button type="button" class="btn btn-primary btn-filter {{successState}} filterButton" (click)="toggleSuccess()"><i [class]="successState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Success</button>
+        <button type="button" class="btn btn-primary btn-filter {{failedState}} filterButton" (click)="toggleFailed()"><i [class]="failedState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Failed</button>
+        <button type="button" class="btn btn-primary btn-filter {{activeState}} filterButton" (click)="toggleActive()"><i [class]="activeState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Active</button>
     </div>
 </div>
 
@@ -52,5 +55,5 @@
 </div>
 
 <div class="table-responsive">
-    <scenario-execution-list [scenarioExecutions]="scenarioExecutions | activityFilter : inputValue : includeSuccess : includeFailed : includeActive"></scenario-execution-list>
+    <scenario-execution-list [scenarioExecutions]></scenario-execution-list>
 </div>

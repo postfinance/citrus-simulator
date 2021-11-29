@@ -11,8 +11,8 @@
     <input [(ngModel)]="messageFilter.containingText" (keyup.enter)="getMessages();" type="text" class="form-control"
            placeholder="Filter By Content">
     <div class="input-group-btn">
-        <button type="button" class="btn btn-primary filter btn-filter {{inboundState}}" (click)="toggleInbound()"><i [class]="inboundState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Inbound</button>
-        <button type="button" class="btn btn-primary filter btn-filter {{outboundState}}" (click)="toggleOutbound()"><i [class]="outboundState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Outbound</button>
+        <button type="button" class="btn btn-primary btn-filter {{messageFilter.directionInbound}}" (click)="toggleInbound()"><i [class]="messageFilter.directionInbound ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Inbound</button>
+        <button type="button" class="btn btn-primary btn-filter {{messageFilter.directionOutbound}}" (click)="toggleOutbound()"><i [class]="messageFilter.directionOutbound ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Outbound</button>
     </div>
 </div>
 
