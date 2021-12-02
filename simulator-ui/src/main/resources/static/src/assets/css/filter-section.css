@@ -1,0 +1,84 @@
+.date-section {
+    display: flex;
+    justify-content: space-between;
+    horiz-align: center;
+}
+
+.date-box {
+    display: grid;
+    flex-grow: 1;
+}
+
+.date-box + .date-box {
+    border-left: solid 20px white;
+}
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex{
+    padding-top: 0 !important;
+    background-color: white !important;
+    align-items: center;
+}
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-infix {
+    padding: 0;
+    border: none;
+}
+
+::ng-deep .mat-form-field-wrapper {
+    margin-bottom: -10px;
+}
+
+::ng-deep .ngx-timepicker {
+    padding-bottom: 5px;
+}
+
+::ng-deep .ngx-timepicker{
+    height: 70% !important;
+    border-bottom: 0 !important;
+    padding: 0;
+}
+
+::ng-deep input.mat-input-element {
+    margin-left: 13px;
+    color: rgb(105,102,107);
+}
+
+::ng-deep .ngx-material-timepicker-toggle {
+    padding: 0 0 5px 0 !important;
+    margin-right: 20px;
+    filter: invert(37%) sepia(5%) saturate(6656%) hue-rotate(156deg) brightness(97%) contrast(77%); /*"https://codepen.io/sosuke/pen/Pjoqqp"*/
+}
+
+::ng-deep.mat-form-field-ripple {
+    background-color: black !important;
+}
+
+::ng-deep .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+    background-color: #5bc0de;
+}
+
+::ng-deep .mat-calendar-body-today:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+    border-color: #31708f;
+    background-color: #5bc0de !important;
+}
+
+::ng-deep .mat-calendar-body-selected {
+    background-color: #31708f;
+}
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-infix {
+    margin-left: 0;
+}
+
+mat-datepicker-toggle {
+    color: #31708f !important;
+}
+
+.timepicker {
+    margin-left: 25px;
+}
+
+.flex {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}

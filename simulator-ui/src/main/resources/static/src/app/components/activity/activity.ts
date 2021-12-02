@@ -3,11 +3,12 @@ import {ActivatedRoute} from "@angular/router";
 import {ActivityService} from "../../services/activity-service";
 import {ScenarioExecution} from "../../model/scenario";
 import {MessageFilter, ScenarioExecutionFilter} from "../../model/filter";
+import {MatFormField} from "@angular/material/form-field";
 
 @Component({
     moduleId: module.id,
     templateUrl: 'activity.html',
-    styleUrls: ['activity.css'],
+    styleUrls: ['activity.css', '../../../assets/css/filter-section.css'],
     selector: "app-root",
 })
 export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
