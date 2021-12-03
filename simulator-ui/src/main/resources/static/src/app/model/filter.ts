@@ -11,13 +11,13 @@ export class MessageFilter {
 
 export class ScenarioExecutionFilter {
     constructor(
-        public fromDate: number,
-        public toDate: number,
+        public fromDate: string,
+        public toDate: string,
         public pageNumber: number,
         public pageSize: number,
+        public headerFilter: string,
         public scenarioName: string,
-        public headers: string,
-        public states: string[],
+        public executionStatus: string[],
     ) {
     }
 }

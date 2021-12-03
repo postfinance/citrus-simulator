@@ -2,8 +2,8 @@ import {Component, OnInit, AfterViewInit, OnDestroy} from "@angular/core";
 import {ActivatedRoute} from "@angular/router";
 import {ActivityService} from "../../services/activity-service";
 import {ScenarioExecution} from "../../model/scenario";
-import {MessageFilter, ScenarioExecutionFilter} from "../../model/filter";
-import {MatFormField} from "@angular/material/form-field";
+import {ScenarioExecutionFilter} from "../../model/filter";
+import * as moment from "moment";
 
 @Component({
     moduleId: module.id,
@@ -12,24 +12,21 @@ import {MatFormField} from "@angular/material/form-field";
     selector: "app-root",
 })
 export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
-    scenarioExecutions: ScenarioExecution[];
     scenarioExecutionFilter: ScenarioExecutionFilter;
+    scenarioExecutions: ScenarioExecution[];
     errorMessage: string;
 
-    inputValue: string = '';
-    inputHeaders: string = '';
     inputIncludeFilterInRequest: boolean = false;
+    autoRefreshId: number;
 
     successState: boolean = true;
     failedState: boolean = true;
     activeState: boolean = true;
 
-    dateTimeFrom: any;
-    dateTimeTo: any;
-
-    pageSize = 25;
-    page = 0;
-    autoRefreshId: number;
+    inputDateFrom: any;
+    inputTimeFrom: any;
+    inputDateTo: any;
+    inputTimeTo: any;
 
     constructor(
         private activityService: ActivityService,
@@ -53,7 +50,7 @@ export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
             }
         }
 
-        this.autoRefreshId = window.setInterval(() => { if (this.page == 0 && this.pageSize < 250) {
+        this.autoRefreshId = window.setInterval(() => { if (this.scenarioExecutionFilter.pageNumber == 0 && this.scenarioExecutionFilter.pageSize < 250) {
             this.getActivities();
         } }, 2000);
     }
@@ -62,45 +59,60 @@ export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
         window.clearInterval(this.autoRefreshId);
     }
 
-    ngAfterViewInit(): void {
-    }
-
     getActivities() {
-        this.buildLocalScenarioExecutionFilter();
-        this.activityService.getScenarioExecutions(this.scenarioExecutionFilter).subscribe(
-            scenarioExecutions => this.scenarioExecutions = scenarioExecutions,
-            error => this.errorMessage = <any>error
-        );
+        this.includeStatusInRequest();
+        this.activityService.getScenarioExecutions(this.scenarioExecutionFilter)
+            .subscribe( {
+                next: (scenarioExecutions) => this.scenarioExecutions = scenarioExecutions,
+                error: (error) => this.errorMessage = <any>error
+            });
     }
 
-    buildLocalScenarioExecutionFilter() {
-        this.scenarioExecutionFilter.fromDate = this.dateTimeFrom;
-        this.scenarioExecutionFilter.toDate = this.dateTimeTo;
-        this.scenarioExecutionFilter.pageSize = this.pageSize;
-        this.scenarioExecutionFilter.pageNumber = this.page;
-        this.scenarioExecutionFilter.scenarioName = this.inputValue;
-        this.scenarioExecutionFilter.headers = this.inputHeaders;
-        this.scenarioExecutionFilter.states = ["success:" + this.successState ,"failed:" + this.failedState,"active:" + this.activeState];
-    }
-
-    clearActivity() {
+    clearActivities() {
         this.activityService.clearScenarioExecutions().subscribe({
-            next:success => this.getActivities(),
-            error:error => this.errorMessage = <any>error
+            next: (success) => this.getActivities(),
+            error: (error) => this.errorMessage = <any>error
         });
     }
 
+    includeStatusInRequest() {
+        this.scenarioExecutionFilter.executionStatus = [ (this.successState) ? "SUCCESS" : undefined ,
+            (this.failedState) ? "FAILED" : undefined, (this.activeState) ? "ACTIVE" : undefined];
+    }
+
     prev() {
-        if (this.page > 0) {
-            this.page--;
+        if (this.scenarioExecutionFilter.pageNumber > 0) {
+            this.scenarioExecutionFilter.pageNumber--;
             this.getActivities();
         }
     }
 
     next() {
         if (this.scenarioExecutions && this.scenarioExecutions.length) {
-            this.page++;
+            this.scenarioExecutionFilter.pageNumber++;
             this.getActivities();
+        }
+    }
+
+    setDateTimeFrom(): void {
+        if (this.inputDateFrom && this.inputTimeFrom) {
+            // converts 12h to 24h
+            let time = moment(this.inputTimeFrom, ["h:mm A"]).format("HH:mm");
+            let date = this.inputDateFrom.split("/");
+            let timeNum = time.split(':').map(Number);
+            //-1 because the month starts at index 0
+            this.scenarioExecutionFilter.fromDate = new Date(date[2], date[0]-1, date[1], timeNum[0], timeNum[1]).toISOString();
+        }
+    }
+
+    setDateTimeTo(): void {
+        if (this.inputDateTo && this.inputTimeTo) {
+            // converts 12h to 24h
+            let time = moment(this.inputTimeTo, ["h:mm A"]).format("HH:mm");
+            let date = this.inputDateTo.split("/");
+            let timeNum = time.split(':').map(Number);
+            //-1 because the month starts at index 0
+            this.scenarioExecutionFilter.toDate = new Date(date[2], date[0]-1, date[1], Number(timeNum[0]), Number(timeNum[1])).toISOString();
         }
     }
 
@@ -118,5 +130,8 @@ export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
 
     initScenarioExecutionFilter(): ScenarioExecutionFilter {
         return new ScenarioExecutionFilter(null, null, 0, 25, '', '', [] );
+    }
+
+    ngAfterViewInit(): void {
     }
 }
