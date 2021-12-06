@@ -22,7 +22,6 @@ import {AboutComponent} from "./components/about/about";
 import {ExecutionStatusPipe} from "./pipes/execution-status-pipe";
 import {TruncatePipe} from "./pipes/truncate-pipe";
 import {ScenarioNamePipe} from "./pipes/scenario-name-pipe";
-import {ActivityFilterPipe} from "./pipes/activity-filter-pipe";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {CommonModule} from "@angular/common";
 import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
@@ -59,7 +58,6 @@ import {MatInputModule} from "@angular/material/input";
         ExecutionStatusPipe,
         TruncatePipe,
         ScenarioNamePipe,
-        ActivityFilterPipe,
         routedComponents
     ],
     providers: [
