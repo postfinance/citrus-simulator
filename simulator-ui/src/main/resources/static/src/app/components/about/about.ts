@@ -14,7 +14,7 @@ export class AboutComponent implements OnInit {
         this.appInfoService.getAppInfo()
             .subscribe({
                 next: (appInfo) => this.simulatorInfo = appInfo.simulator,
-                error: (error) => console.log(error),
+                error: (error) => console.error(error),
                 complete: () => console.log("Info has been retrieved: simulator name = '%s', domain = '%s', version = '%s'",
                     this.simulatorInfo.name,
                     this.simulatorInfo.version)

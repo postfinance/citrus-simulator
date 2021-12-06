@@ -1,3 +1,8 @@
+.first-input-element {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-left: 0;
+}
 .btn:active, .btn.active {
     text-decoration: underline;
     outline: 0;
@@ -33,7 +38,7 @@
     background-color: #d6857a;
 }
 
-.btn-filter:focus, .btn-filter:active:focus, .btn-filter.active:focus, .btn-filter.focus, .btn-filter:active.focus, .btn-filter.active.focus {
+.filter-input:focus, .filter-input:active:focus, .filter-input.active:focus, .filter-input.focus, .filter-input:active.focus, .filter-input.active.focus {
     outline: 0;
     box-shadow: none !important;
 }

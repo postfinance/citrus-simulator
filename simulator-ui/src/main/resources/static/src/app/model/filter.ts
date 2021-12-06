@@ -1,6 +1,6 @@
 export class MessageFilter {
-    constructor(public fromDate: number,
-                public toDate: number,
+    constructor(public fromDate: string,
+                public toDate: string,
                 public pageNumber: number,
                 public pageSize: number,
                 public directionInbound: boolean,
