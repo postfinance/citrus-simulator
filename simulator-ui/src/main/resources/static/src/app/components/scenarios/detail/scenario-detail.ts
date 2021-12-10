@@ -35,7 +35,8 @@ export class ScenarioDetailComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.scenarioExecutionFilter.scenarioName = this.route.snapshot.params['name'];
+        let name = this.route.snapshot.params['name'];
+        this.scenarioExecutionFilter = this.initScenarioExecutionFilter(name);
         this.getScenario(this.scenarioExecutionFilter.scenarioName);
         this.getScenarioExecutions(this.scenarioExecutionFilter.scenarioName);
     }
@@ -50,7 +51,7 @@ export class ScenarioDetailComponent implements OnInit {
                         this.getScenarioParameters(name);
                     }
                 },
-                error: (error) => this.errorMessage = <any>error
+                error: (error) => this.errorMessage = error.toString()
             });
     }
 
@@ -58,17 +59,16 @@ export class ScenarioDetailComponent implements OnInit {
         this.scenarioService.getScenarioParameters(name)
             .subscribe({
                 next: (scenarioParameters) => this.scenarioParameters = scenarioParameters,
-                error: (error) => this.errorMessage = <any>error
+                error: (error) => this.errorMessage = error.toString()
             });
     }
 
-
     getScenarioExecutions(name: string) {
-        this.scenarioExecutionFilter.scenarioName = name;
+        this.includeStatusInRequest();
         this.activityService.getScenarioExecutions(this.scenarioExecutionFilter)
             .subscribe({
                 next: (scenarioExecutions) => this.scenarioExecutions = scenarioExecutions,
-                error: (error) => this.errorMessage = <any>error
+                error: (error) => this.errorMessage = error.toString()
             });
     }
 
@@ -90,8 +90,13 @@ export class ScenarioDetailComponent implements OnInit {
                 next: (executionId) => {
                     this.router.navigate(['activity', executionId]);
                 },
-                error: (error) => this.errorMessage = <any>error
+                error: (error) => this.errorMessage = error.toString()
             });
+    }
+
+    includeStatusInRequest() {
+        this.scenarioExecutionFilter.executionStatus = [ (this.successState) ? "SUCCESS" : undefined,
+            (this.failedState) ? "FAILED" : undefined, (this.activeState) ? "ACTIVE" : undefined];
     }
 
     goBack() {
@@ -111,4 +116,7 @@ export class ScenarioDetailComponent implements OnInit {
         this.activeState = !this.activeState;
     }
 
+    initScenarioExecutionFilter(name: string): ScenarioExecutionFilter {
+        return new ScenarioExecutionFilter(null, null, null, null, null, name, []);
+    }
 }

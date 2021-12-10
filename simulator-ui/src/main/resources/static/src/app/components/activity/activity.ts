@@ -1,9 +1,10 @@
-import {Component, OnInit, AfterViewInit, OnDestroy} from "@angular/core";
+import {Component, OnInit, AfterViewInit, OnDestroy, ViewChild} from "@angular/core";
 import {ActivatedRoute} from "@angular/router";
 import {ActivityService} from "../../services/activity-service";
 import {ScenarioExecution} from "../../model/scenario";
 import {ScenarioExecutionFilter} from "../../model/filter";
 import * as moment from "moment";
+import {MatInput} from "@angular/material/input";
 
 @Component({
     moduleId: module.id,
@@ -64,19 +65,19 @@ export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
         this.activityService.getScenarioExecutions(this.scenarioExecutionFilter)
             .subscribe( {
                 next: (scenarioExecutions) => this.scenarioExecutions = scenarioExecutions,
-                error: (error) => this.errorMessage = <any>error
+                error: (error) => this.errorMessage = error.toString()
             });
     }
 
     clearActivities() {
         this.activityService.clearScenarioExecutions().subscribe({
             next: (success) => this.getActivities(),
-            error: (error) => this.errorMessage = <any>error
+            error: (error) => this.errorMessage = error.toString()
         });
     }
 
     includeStatusInRequest() {
-        this.scenarioExecutionFilter.executionStatus = [ (this.successState) ? "SUCCESS" : undefined ,
+        this.scenarioExecutionFilter.executionStatus = [ (this.successState) ? "SUCCESS" : undefined,
             (this.failedState) ? "FAILED" : undefined, (this.activeState) ? "ACTIVE" : undefined];
     }
 
@@ -96,22 +97,22 @@ export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
 
     setDateTimeFrom(): void {
         if (this.inputDateFrom && this.inputTimeFrom) {
-            // converts 12h to 24h
+            /* converts 12h to 24h */
             let time = moment(this.inputTimeFrom, ["h:mm A"]).format("HH:mm");
             let date = this.inputDateFrom.split("/");
             let timeNum = time.split(':').map(Number);
-            //-1 because the month starts at index 0
+            /* -1 because the month starts at index 0 */
             this.scenarioExecutionFilter.fromDate = new Date(date[2], date[0]-1, date[1], timeNum[0], timeNum[1]).toISOString();
         }
     }
 
     setDateTimeTo(): void {
         if (this.inputDateTo && this.inputTimeTo) {
-            // converts 12h to 24h
+            /* converts 12h to 24h */
             let time = moment(this.inputTimeTo, ["h:mm A"]).format("HH:mm");
             let date = this.inputDateTo.split("/");
             let timeNum = time.split(':').map(Number);
-            //-1 because the month starts at index 0
+            /* -1 because the month starts at index 0 */
             this.scenarioExecutionFilter.toDate = new Date(date[2], date[0]-1, date[1], Number(timeNum[0]), Number(timeNum[1])).toISOString();
         }
     }
@@ -133,5 +134,19 @@ export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
+    }
+
+    /* Used for clearing the values in the date field */
+    @ViewChild('dateFromInput', {read: MatInput}) dateFromInput: MatInput;
+    @ViewChild('dateToInput', {read: MatInput}) dateToInput: MatInput;
+
+    resetDateFrom() {
+        this.inputDateFrom = null;
+        this.dateFromInput.value = '';
+    }
+
+    resetDateTo() {
+        this.inputDateTo = null;
+        this.dateToInput.value = '';
     }
 }

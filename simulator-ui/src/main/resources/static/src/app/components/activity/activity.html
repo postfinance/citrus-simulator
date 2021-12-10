@@ -1,6 +1,6 @@
 <h1 class="page-header"><i class="fa fa-cogs"></i> Activity
     <div class="pull-right">
-        <span class="clickable action-icon" title="Refresh Activity" (click)="getActivities()"><i class="fa fa-refresh"></i></span>
+        <span class="clickable action-icon" title="Refresh Activity" (click)="getActivities()"><i class="fa fa-refresh refresh-icon"></i></span>
         <span class="clickable action-icon" title="Clear Activity" (click)="clearActivities()"><i class="fa fa-recycle"></i></span>
     </div>
 </h1>
@@ -19,11 +19,13 @@
     <div class="date-section">
         <div class="date-box">
             <mat-form-field color="primary" appearance="fill">
+                <i *ngIf="inputDateFrom" (click)="resetDateFrom();" class="fa fa-times clear-date clickable"></i>
                 <input #dateFromInput (dateChange)="inputDateFrom = dateFromInput.value; setDateTimeFrom();" matInput [matDatepicker]="dateFrom" placeholder="Date from">
                 <mat-datepicker-toggle matSuffix [for]="dateFrom"></mat-datepicker-toggle>
                 <mat-datepicker #dateFrom></mat-datepicker>
             </mat-form-field>
             <div class="time-div flex">
+                <i *ngIf="inputTimeFrom" (click)="inputTimeFrom = null;" class="fa fa-times clear-time clickable"></i>
                 <input [(ngModel)]="inputTimeFrom" (ngModelChange)="setDateTimeFrom()" matInput class="timepicker" [ngxTimepicker]="timeFrom" readonly placeholder="Time from">
                 <ngx-material-timepicker-toggle class="timepicker-icon" [for]="timeFrom"></ngx-material-timepicker-toggle>
                 <ngx-material-timepicker #timeFrom></ngx-material-timepicker>
@@ -31,11 +33,13 @@
         </div>
         <div class="date-box">
             <mat-form-field appearance="fill">
+                <i *ngIf="inputDateTo" (click)="resetDateTo();" class="fa fa-times clear-date clickable"></i>
                 <input #dateToInput (dateChange)="inputDateTo = dateToInput.value; setDateTimeTo();" matInput [matDatepicker]="dateTo" placeholder="Date to">
                 <mat-datepicker-toggle matSuffix [for]="dateTo"></mat-datepicker-toggle>
                 <mat-datepicker #dateTo></mat-datepicker>
             </mat-form-field>
             <div class="time-div flex">
+                <i *ngIf="inputTimeTo" (click)="inputTimeTo = null;" class="fa fa-times clear-time clickable"></i>
                 <input [(ngModel)]="inputTimeTo" (ngModelChange)="setDateTimeTo()" matInput class="timepicker" [ngxTimepicker]="timeTo" readonly placeholder="Time to">
                 <ngx-material-timepicker-toggle class="timepicker-icon" [for]="timeTo"></ngx-material-timepicker-toggle>
                 <ngx-material-timepicker #timeTo></ngx-material-timepicker>
