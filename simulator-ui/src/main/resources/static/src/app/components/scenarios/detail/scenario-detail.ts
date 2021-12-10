@@ -34,7 +34,8 @@ export class ScenarioDetailComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.scenarioExecutionFilter.scenarioName = this.route.snapshot.params['name'];
+        let name = this.route.snapshot.params['name'];
+        this.scenarioExecutionFilter = this.initScenarioExecutionFilter(name);
         this.getScenario(this.scenarioExecutionFilter.scenarioName);
         this.getScenarioExecutions(this.scenarioExecutionFilter.scenarioName);
     }
@@ -61,9 +62,8 @@ export class ScenarioDetailComponent implements OnInit {
             });
     }
 
-
     getScenarioExecutions(name: string) {
-        this.scenarioExecutionFilter.scenarioName = name;
+        this.includeStatusInRequest();
         this.activityService.getScenarioExecutions(this.scenarioExecutionFilter)
             .subscribe({
                 next: (scenarioExecutions) => this.scenarioExecutions = scenarioExecutions,
@@ -93,6 +93,11 @@ export class ScenarioDetailComponent implements OnInit {
             });
     }
 
+    includeStatusInRequest() {
+        this.scenarioExecutionFilter.executionStatus = [ (this.successState) ? "SUCCESS" : undefined,
+            (this.failedState) ? "FAILED" : undefined, (this.activeState) ? "ACTIVE" : undefined];
+    }
+
     goBack() {
         this.location.back();
         return false;
@@ -110,4 +115,7 @@ export class ScenarioDetailComponent implements OnInit {
         this.activeState = !this.activeState;
     }
 
+    initScenarioExecutionFilter(name: string): ScenarioExecutionFilter {
+        return new ScenarioExecutionFilter(null, null, null, null, null, name, []);
+    }
 }

@@ -161,3 +161,14 @@ mat-datepicker-toggle {
 ::ng-deep .mat-calendar-body-today {
     border: none !important;
 }
+
+.clear-date {
+    position: absolute;
+    left: -6px;
+}
+
+.clear-time {
+    position: absolute;
+    padding-top: 1px;
+    padding-left: 6px;
+}
