@@ -16,6 +16,8 @@
             <button type="button" class="btn btn-primary filter filter-input {{messageFilter.directionOutbound}}" (click)="toggleOutbound()"><i [class]="messageFilter.directionOutbound ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Outbound</button>
         </div>
     </div>
+    <input [(ngModel)]="messageFilter.headerFilter" id="headers" type="text" class="form-control filter-input header-filter" placeholder="Filter By Header" data-toggle="tooltip"
+           data-placement="top" title="Use optional key value pairs to filter via the MessageHeaders&#10;Pattern: key1:value1;key2:value2">
     <div class="date-section">
         <div class="date-box">
             <mat-form-field color="primary" appearance="fill">
