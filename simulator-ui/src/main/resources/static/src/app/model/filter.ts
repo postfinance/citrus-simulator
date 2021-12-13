@@ -3,6 +3,7 @@ export class MessageFilter {
                 public toDate: string,
                 public pageNumber: number,
                 public pageSize: number,
+                public headerFilter: string,
                 public directionInbound: boolean,
                 public directionOutbound: boolean,
                 public containingText: string) {

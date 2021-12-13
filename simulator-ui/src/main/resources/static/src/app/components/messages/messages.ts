@@ -105,7 +105,7 @@ export class MessagesComponent implements OnInit, OnDestroy {
     }
 
     initMessageFilter(): MessageFilter {
-        return new MessageFilter(null, null, 0, 25, true, true, '');
+        return new MessageFilter(null, null, 0, 25, '', true, true, '');
     }
 
     changePageSize(pageSize: number) {
