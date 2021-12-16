@@ -1,6 +1,9 @@
 Citrus Simulator ![Logo][1]
 ================
 
+[![LTS Build](https://img.shields.io/github/workflow/status/citrusframework/citrus-simulator/build_jdk17)](https://github.com/citrusframework/citrus-simulator/actions/workflows/lts.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=citrus-simulator&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=citrus-simulator)
+
 This is a standalone simulator for different messaging transports such as Http REST, SOAP WebService,
 JMS, RMI, SMTP and more.
 
@@ -56,7 +59,7 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
 jar {
-    group = "com.consol.citrus.simulator"
+    group = "org.citrusframework.simulator"
     baseName = 'citrus-simulator-sample'
     version =  '1.2-SNAPSHOT'
 }
@@ -168,7 +171,7 @@ Simulator logic
 As the simulator is a normal Spring boot application we just add a usual main class.
 
 ```java
-package com.consol.citrus.simulator;
+package org.citrusframework.simulator;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -185,10 +188,10 @@ public class Simulator {
 In addition to that we should define one to many simulator scenarios that execute when requests are received.
 
 ```java
-package com.consol.citrus.simulator;
+package org.citrusframework.simulator;
 
 import com.consol.citrus.http.message.HttpMessage;
-import com.consol.citrus.simulator.scenario.*;
+import org.citrusframework.simulator.scenario.*;
 import org.springframework.http.HttpStatus;
 
 @Scenario("DEFAULT_SCENARIO")
