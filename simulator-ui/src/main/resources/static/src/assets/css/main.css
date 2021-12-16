@@ -52,51 +52,6 @@ ul.pagination {
 
 /** Buttons **/
 
-.btn:active, .btn.active {
-    text-decoration: underline;
-    outline: 0;
-    background-image: none;
-    box-shadow: none;
-}
-
-.btn-primary,
-.btn-primary:focus {
-    background-color: #33abde !important;
-    border-color: #33abde !important;
-}
-
-.btn-primary:hover, .btn-primary.active:hover {
-    background-color: #33abde !important;
-    border-color: #33abde !important;
-}
-
-.btn-primary.active,
-.btn-primary.active:focus {
-    background-color: #0096D6 !important;
-    border-color: #0096D6 !important;
-}
-
-.btn-return {
-    color: #ffffff;
-    border-color: #d66e5b;
-    background: #d66e5b;
-}
-
-.btn-return:hover {
-    border-color: #d6857a;
-    background-color: #d6857a;
-}
-
-.btn-filter:focus, .btn-filter:active:focus, .btn-filter.active:focus, .btn-filter.focus, .btn-filter:active.focus, .btn-filter.active.focus {
-    outline: 0;
-    box-shadow: none !important;
-}
-
-.filter {
-    border-radius: 0 !important;
-    height: 100% !important;
-}
-
 .clickable{
     cursor: pointer;
 }
@@ -111,6 +66,13 @@ tr td {
 
 .action-icon {
     padding: 3px 3px;
+    width: 25px;
+    height: 25px;
+}
+
+.fa-refresh {
+    transform: scale(1.02);
+    vertical-align: middle !important;
 }
 
 .pageSizeCounter {
