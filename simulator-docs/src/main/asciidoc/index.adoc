@@ -1,5 +1,6 @@
+[[citrus-simulator]]
 = Citrus Simulator
-Christoph Deppisch;Martin Maher;Georgi Todorov
+Authors: The Citrus Community
 :revnumber: {version}
 :revdate: {localdate}
 :sectanchors:
@@ -17,25 +18,24 @@ Christoph Deppisch;Martin Maher;Georgi Todorov
 
 ifndef::ebook-format[:leveloffset: 1]
 
-*Copyright © 2017 ConSol Software GmbH* +
 *Version: {version}*
 
 image:citrus-logo-small.png[citrus-logo]
 
 ifdef::basebackend-html[toc::[]]
 
-include::manual/introduction.adoc[]
-include::manual/installation.adoc[]
-include::manual/concepts.adoc[]
+include::introduction.adoc[]
+include::installation.adoc[]
+include::concepts.adoc[]
 
-include::manual/rest-support.adoc[]
-include::manual/ws-support.adoc[]
-include::manual/jms-support.adoc[]
-include::manual/endpoint-support.adoc[]
+include::rest-support.adoc[]
+include::ws-support.adoc[]
+include::jms-support.adoc[]
+include::endpoint-support.adoc[]
 
-include::manual/user-interface.adoc[]
+include::user-interface.adoc[]
 
-include::manual/starter.adoc[]
+include::starter.adoc[]
 
-include::manual/samples.adoc[]
-include::manual/links.adoc[]
+include::samples.adoc[]
+include::links.adoc[]
