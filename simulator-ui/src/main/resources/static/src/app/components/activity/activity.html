@@ -10,12 +10,12 @@
 <div style="border: 1px solid #ced4da; border-top: 0;">
     <div class="input-group">
         <input [(ngModel)]="scenarioExecutionFilter.scenarioName" id="name" type="text" class="form-control filter-input first-input-element" placeholder="Filter By Name">
-        <input [(ngModel)]="scenarioExecutionFilter.headerFilter" id="headers" type="text" class="form-control filter-input" placeholder="Filter By Header" data-toggle="tooltip"
-               data-placement="top" title="Use optional key value pairs to filter via the MessageHeaders&#10;Pattern: key1:value1;key2:value2">
         <button type="button" class="btn btn-primary filter filter-input {{successState}} filterButton" (click)="toggleSuccess()"><i [class]="successState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Success</button>
         <button type="button" class="btn btn-primary filter filter-input {{failedState}} filterButton" (click)="toggleFailed()"><i [class]="failedState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Failed</button>
         <button type="button" class="btn btn-primary filter filter-input {{activeState}} filterButton" (click)="toggleActive()"><i [class]="activeState ? 'fa fa-check' : 'fa fa-eye-slash'"></i> Active</button>
     </div>
+    <input [(ngModel)]="scenarioExecutionFilter.headerFilter" id="headers" type="text" class="form-control filter-input header-filter" placeholder="Filter By Header" data-toggle="tooltip"
+           data-placement="top" title="Use optional key value pairs to filter via the MessageHeaders&#10;Pattern: key1:value1;key2:value2">
     <div class="date-section">
         <div class="date-box">
             <mat-form-field color="primary" appearance="fill">
@@ -25,7 +25,7 @@
                 <mat-datepicker #dateFrom></mat-datepicker>
             </mat-form-field>
             <div class="time-div flex">
-                <i *ngIf="inputTimeFrom" (click)="inputTimeFrom = null;" class="fa fa-times clear-time clickable"></i>
+                <i *ngIf="inputTimeFrom" (click)="resetTimeFrom();" class="fa fa-times clear-time clickable"></i>
                 <input [(ngModel)]="inputTimeFrom" (ngModelChange)="setDateTimeFrom()" matInput class="timepicker" [ngxTimepicker]="timeFrom" readonly placeholder="Time from">
                 <ngx-material-timepicker-toggle class="timepicker-icon" [for]="timeFrom"></ngx-material-timepicker-toggle>
                 <ngx-material-timepicker #timeFrom></ngx-material-timepicker>
@@ -39,7 +39,7 @@
                 <mat-datepicker #dateTo></mat-datepicker>
             </mat-form-field>
             <div class="time-div flex">
-                <i *ngIf="inputTimeTo" (click)="inputTimeTo = null;" class="fa fa-times clear-time clickable"></i>
+                <i *ngIf="inputTimeTo" (click)="resetTimeTo();" class="fa fa-times clear-time clickable"></i>
                 <input [(ngModel)]="inputTimeTo" (ngModelChange)="setDateTimeTo()" matInput class="timepicker" [ngxTimepicker]="timeTo" readonly placeholder="Time to">
                 <ngx-material-timepicker-toggle class="timepicker-icon" [for]="timeTo"></ngx-material-timepicker-toggle>
                 <ngx-material-timepicker #timeTo></ngx-material-timepicker>

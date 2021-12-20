@@ -4,6 +4,7 @@ import {Message} from "../../model/scenario";
 import {MessageFilter} from "../../model/filter";
 import * as moment from "moment";
 import {MatInput} from "@angular/material/input";
+import {forEach, toString} from "lodash";
 
 @Component({
     moduleId: module.id,
@@ -44,8 +45,18 @@ export class MessagesComponent implements OnInit, OnDestroy {
     getMessages() {
         this.messageService.getMessages(this.messageFilter)
             .subscribe( {
-                next: (messages) => this.messages = messages,
-                error: (error) => this.errorMessage = error.toString()
+                next: (messages) => {
+                    this.messages = messages;
+                },
+                error: (error) => this.errorMessage = error.toString(),
+                complete: () => {
+                    // TODO fix date parsing (server): the time of activity scenarios and messages is shifted by one hour.
+                    for (let i = 0; i < this.messages.length; i++) {
+                        let date = new Date(this.messages[i].date);
+                        date.setHours(date.getHours()-1);
+                        this.messages[i].date = Date.parse(date.toISOString());
+                    }
+                }
             });
     }
 
@@ -83,6 +94,9 @@ export class MessagesComponent implements OnInit, OnDestroy {
             let timeNum = time.split(':').map(Number);
             /* -1 because the month starts at index 0 */
             this.messageFilter.fromDate = new Date(date[2], date[0]-1, date[1], timeNum[0], timeNum[1]).toISOString();
+        } else if (this.inputDateFrom == null && this.inputTimeFrom == null) {
+            this.messageFilter.fromDate = null;
+            this.getMessages();
         }
     }
 
@@ -94,6 +108,9 @@ export class MessagesComponent implements OnInit, OnDestroy {
             let timeNum = time.split(':').map(Number);
             /* -1 because the month starts at index 0 */
             this.messageFilter.toDate = new Date(date[2], date[0]-1, date[1], Number(timeNum[0]), Number(timeNum[1])).toISOString();
+        } else if (this.inputDateTo == null && this.inputTimeTo == null) {
+            this.messageFilter.toDate = null;
+            this.getMessages();
         }
     }
 
@@ -117,16 +134,29 @@ export class MessagesComponent implements OnInit, OnDestroy {
         this.getMessages();
     }
 
+    /* used for clearing the values in the date fields */
     @ViewChild('dateFromInput', {read: MatInput}) dateFromInput: MatInput;
     @ViewChild('dateToInput', {read: MatInput}) dateToInput: MatInput;
 
     resetDateFrom() {
         this.inputDateFrom = null;
-        this.dateFromInput.value = '';
+        this.dateFromInput.value = null;
+        this.setDateTimeFrom();
+    }
+
+    resetTimeFrom() {
+        this.inputTimeFrom = null;
+        this.setDateTimeFrom();
     }
 
     resetDateTo() {
         this.inputDateTo = null;
-        this.dateToInput.value = '';
+        this.dateToInput.value = null;
+        this.setDateTimeTo();
+    }
+
+    resetTimeTo() {
+        this.inputTimeTo = null;
+        this.setDateTimeTo();
     }
 }
