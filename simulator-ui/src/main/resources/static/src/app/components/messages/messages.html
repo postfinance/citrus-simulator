@@ -27,7 +27,7 @@
                 <mat-datepicker #dateFrom></mat-datepicker>
             </mat-form-field>
             <div class="time-div flex">
-                <i *ngIf="inputTimeFrom" (click)="inputTimeFrom = null;" class="fa fa-times clear-time clickable"></i>
+                <i *ngIf="inputTimeFrom" (click)="resetTimeFrom();" class="fa fa-times clear-time clickable"></i>
                 <input [(ngModel)]="inputTimeFrom" (ngModelChange)="setDateTimeFrom()" matInput class="timepicker" [ngxTimepicker]="timeFrom" readonly placeholder="Time from">
                 <ngx-material-timepicker-toggle class="timepicker-icon" [for]="timeFrom"></ngx-material-timepicker-toggle>
                 <ngx-material-timepicker #timeFrom></ngx-material-timepicker>
@@ -41,7 +41,7 @@
                 <mat-datepicker #dateTo></mat-datepicker>
             </mat-form-field>
             <div class="time-div flex">
-                <i *ngIf="inputTimeTo" (click)="inputTimeTo = null;" class="fa fa-times clear-time clickable"></i>
+                <i *ngIf="inputTimeTo" (click)="resetTimeTo();" class="fa fa-times clear-time clickable"></i>
                 <input [(ngModel)]="inputTimeTo" (ngModelChange)="setDateTimeTo()" matInput class="timepicker" [ngxTimepicker]="timeTo" readonly placeholder="Time to">
                 <ngx-material-timepicker-toggle class="timepicker-icon" [for]="timeTo"></ngx-material-timepicker-toggle>
                 <ngx-material-timepicker #timeTo></ngx-material-timepicker>

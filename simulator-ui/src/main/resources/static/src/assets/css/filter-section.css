@@ -43,6 +43,13 @@
     box-shadow: none !important;
 }
 
+.header-filter {
+    border-radius: 0;
+    border-right: 0;
+    border-left: 0;
+    border-top: 0;
+}
+
 .filter {
     border-radius: 0 !important;
     height: 100% !important;

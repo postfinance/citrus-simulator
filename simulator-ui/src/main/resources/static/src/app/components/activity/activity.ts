@@ -103,6 +103,9 @@ export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
             let timeNum = time.split(':').map(Number);
             /* -1 because the month starts at index 0 */
             this.scenarioExecutionFilter.fromDate = new Date(date[2], date[0]-1, date[1], timeNum[0], timeNum[1]).toISOString();
+        } else if (this.inputDateFrom == null && this.inputTimeFrom == null) {
+            this.scenarioExecutionFilter.fromDate = null;
+            this.getActivities();
         }
     }
 
@@ -114,6 +117,9 @@ export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
             let timeNum = time.split(':').map(Number);
             /* -1 because the month starts at index 0 */
             this.scenarioExecutionFilter.toDate = new Date(date[2], date[0]-1, date[1], Number(timeNum[0]), Number(timeNum[1])).toISOString();
+        } else if (this.inputDateTo == null && this.inputTimeTo == null) {
+            this.scenarioExecutionFilter.toDate = null;
+            this.getActivities();
         }
     }
 
@@ -136,17 +142,29 @@ export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {
     ngAfterViewInit(): void {
     }
 
-    /* Used for clearing the values in the date field */
+    /* used for clearing the values in the date fields */
     @ViewChild('dateFromInput', {read: MatInput}) dateFromInput: MatInput;
     @ViewChild('dateToInput', {read: MatInput}) dateToInput: MatInput;
 
     resetDateFrom() {
         this.inputDateFrom = null;
-        this.dateFromInput.value = '';
+        this.dateFromInput.value = null;
+        this.setDateTimeFrom();
+    }
+
+    resetTimeFrom() {
+        this.inputTimeFrom = null;
+        this.setDateTimeFrom();
     }
 
     resetDateTo() {
         this.inputDateTo = null;
-        this.dateToInput.value = '';
+        this.dateToInput.value = null;
+        this.setDateTimeTo();
+    }
+
+    resetTimeTo() {
+        this.inputTimeTo = null;
+        this.setDateTimeTo();
     }
 }
