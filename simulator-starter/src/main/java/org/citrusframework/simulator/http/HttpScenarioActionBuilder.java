@@ -30,8 +30,7 @@ public class HttpScenarioActionBuilder extends HttpActionBuilder {
      * @return
      */
     public HttpServerReceiveActionBuilder receive() {
-        HttpServerReceiveActionBuilder receiveActionBuilder = server(scenarioEndpoint).receive();
-        return receiveActionBuilder;
+        return server(scenarioEndpoint).receive();
     }
 
     /**
@@ -39,11 +38,7 @@ public class HttpScenarioActionBuilder extends HttpActionBuilder {
      * @return
      */
     public HttpServerSendActionBuilder send() {
-        HttpServerSendActionBuilder sendActionBuilder = server(scenarioEndpoint).send();
-        return sendActionBuilder;
+        return server(scenarioEndpoint).send();
     }
-    
-    public HttpServerActionBuilder server(ScenarioEndpoint scenarioEndpoint) {
-        return server(scenarioEndpoint);
-    }
+
 }
