@@ -10,7 +10,7 @@ import {ScenarioExecutionFilter} from "../../../model/filter";
     moduleId: module.id,
     selector: 'scenario-detail',
     templateUrl: 'scenario-detail.html',
-    styleUrls: ['scenario-detail.css',  '../../../../assets/css/filter-section.css'],
+    styleUrls: ['scenario-detail.css',  '../../../styles/filter-section.css'],
     providers: [ScenarioService, ActivityService]
 })
 export class ScenarioDetailComponent implements OnInit {

@@ -7,7 +7,7 @@ import {ActivityService} from "../../services/activity-service";
 @Component({
     moduleId: module.id,
     templateUrl: 'scenario.html',
-    styleUrls: ['scenario.css',  '../../../assets/css/filter-section.css']
+    styleUrls: ['scenario.css',  '../../styles/filter-section.css']
 })
 export class ScenarioComponent implements OnInit {
     inputValue: string = '';

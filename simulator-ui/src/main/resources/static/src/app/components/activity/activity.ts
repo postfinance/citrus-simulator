@@ -9,7 +9,7 @@ import {MatInput} from "@angular/material/input";
 @Component({
     moduleId: module.id,
     templateUrl: 'activity.html',
-    styleUrls: ['activity.css', '../../../assets/css/filter-section.css'],
+    styleUrls: ['activity.css', '../../styles/filter-section.css'],
     selector: "app-root",
 })
 export class ActivityComponent implements OnInit, OnDestroy, AfterViewInit {

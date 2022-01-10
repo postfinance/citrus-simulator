@@ -9,7 +9,7 @@ import {forEach, toString} from "lodash";
 @Component({
     moduleId: module.id,
     templateUrl: 'messages.html',
-    styleUrls: ['messages.css',  '../../../assets/css/filter-section.css']
+    styleUrls: ['messages.css',  '../../styles/filter-section.css']
 })
 export class MessagesComponent implements OnInit, OnDestroy {
     messageFilter: MessageFilter;
