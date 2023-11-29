@@ -19,7 +19,6 @@ package org.citrusframework.simulator.service.impl;
 import org.citrusframework.exceptions.CitrusRuntimeException;
 import org.citrusframework.simulator.model.Message;
 import org.citrusframework.simulator.repository.MessageRepository;
-import org.citrusframework.simulator.service.MessageService;
 import org.citrusframework.simulator.service.ScenarioExecutionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +36,7 @@ import java.util.Optional;
  */
 @Service
 @Transactional
-public class MessageServiceImpl implements MessageService {
+public class MessageServiceImpl implements org.citrusframework.simulator.service.MessageService {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageServiceImpl.class);
 

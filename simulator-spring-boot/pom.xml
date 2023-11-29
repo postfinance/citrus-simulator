@@ -147,6 +147,11 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>au.com.dius.pact</groupId>
+          <artifactId>consumer</artifactId>
+          <version>4.6.3</version>
+      </dependency>
   </dependencies>
 
   <build>

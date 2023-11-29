@@ -41,6 +41,10 @@ public interface MessageRepository extends JpaRepository<Message, Long>, JpaSpec
     @EntityGraph(attributePaths = {"headers", "scenarioExecution"})
     Page<Message> findAll(Specification<Message> spec, Pageable pageable);
 
+    @Override
+    @EntityGraph(attributePaths = {"headers", "scenarioExecution"})
+    List<Message> findAll(Specification<Message> spec);
+
     default List<Message> findAllForScenarioExecution(Long scenarioExecutionId, String citrusMessageId, Message.Direction direction) {
         return findAllByScenarioExecutionExecutionIdEqualsAndCitrusMessageIdEqualsIgnoreCaseAndDirectionEquals(scenarioExecutionId, citrusMessageId, direction.getId());
     }

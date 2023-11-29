@@ -16,6 +16,7 @@
 
 package org.citrusframework.simulator.service.criteria;
 
+import org.citrusframework.simulator.service.filter.Filter;
 import org.citrusframework.simulator.service.filter.InstantFilter;
 import org.citrusframework.simulator.service.filter.IntegerFilter;
 import org.citrusframework.simulator.service.filter.LongFilter;
@@ -53,6 +54,9 @@ public class MessageCriteria implements Serializable, Criteria {
 
     private LongFilter headersId;
 
+    private StringFilter headersKey;
+    private StringFilter headersValue;
+
     private LongFilter scenarioExecutionId;
 
     private InstantFilter createdDate;
@@ -70,6 +74,8 @@ public class MessageCriteria implements Serializable, Criteria {
         this.payload = other.payload == null ? null : other.payload.copy();
         this.citrusMessageId = other.citrusMessageId == null ? null : other.citrusMessageId.copy();
         this.headersId = other.headersId == null ? null : other.headersId.copy();
+        this.headersKey = other.headersKey == null ? null : other.headersKey.copy();
+        this.headersValue = other.headersValue == null ? null : other.headersValue.copy();
         this.scenarioExecutionId = other.scenarioExecutionId == null ? null : other.scenarioExecutionId.copy();
         this.createdDate = other.createdDate == null ? null : other.createdDate.copy();
         this.lastModifiedDate = other.lastModifiedDate == null ? null : other.lastModifiedDate.copy();
@@ -224,6 +230,8 @@ public class MessageCriteria implements Serializable, Criteria {
                 Objects.equals(payload, that.payload) &&
                 Objects.equals(citrusMessageId, that.citrusMessageId) &&
                 Objects.equals(headersId, that.headersId) &&
+                Objects.equals(headersKey, that.headersKey) &&
+                Objects.equals(headersValue, that.headersValue) &&
                 Objects.equals(scenarioExecutionId, that.scenarioExecutionId) &&
                 Objects.equals(createdDate, that.createdDate) &&
                 Objects.equals(lastModifiedDate, that.lastModifiedDate) &&
@@ -245,10 +253,20 @@ public class MessageCriteria implements Serializable, Criteria {
             (payload != null ? "payload=" + payload + ", " : "") +
             (citrusMessageId != null ? "citrusMessageId=" + citrusMessageId + ", " : "") +
             (headersId != null ? "headersId=" + headersId + ", " : "") +
+            (headersKey != null ? "headersKey=" + headersKey + ", " : "") +
+            (headersValue != null ? "headersValue=" + headersValue + ", " : "") +
             (scenarioExecutionId != null ? "scenarioExecutionId=" + scenarioExecutionId + ", " : "") +
             (createdDate != null ? "createdDate=" + createdDate + ", " : "") +
             (lastModifiedDate != null ? "lastModifiedDate=" + lastModifiedDate + ", " : "") +
             (distinct != null ? "distinct=" + distinct + ", " : "") +
             "}";
+    }
+
+    public Filter<String> getHeadersKey() {
+        return headersKey;
+    }
+
+    public Filter<String> getHeadersValue() {
+        return headersValue;
     }
 }

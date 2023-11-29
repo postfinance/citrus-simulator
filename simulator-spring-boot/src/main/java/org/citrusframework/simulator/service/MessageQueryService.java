@@ -53,8 +53,9 @@ public class MessageQueryService extends QueryService<Message> {
 
     /**
      * Return a {@link Page} of {@link Message} which matches the criteria from the database.
+     *
      * @param criteria The object which holds all the filters, which the entities should match.
-     * @param page The page, which should be returned.
+     * @param page     The page, which should be returned.
      * @return the matching entities.
      */
     @Transactional(readOnly = true)
@@ -63,9 +64,16 @@ public class MessageQueryService extends QueryService<Message> {
         final Specification<Message> specification = createSpecification(criteria);
         return messageRepository.findAll(specification, page);
     }
+    @Transactional(readOnly = true)
+    public List<Message> findByCriteriaWithoutpageable(MessageCriteria criteria) {
+        logger.debug("find by criteria : {}", criteria);
+        final Specification<Message> specification = createSpecification(criteria);
+        return messageRepository.findAll(specification);
+    }
 
     /**
      * Return the number of matching entities in the database.
+     *
      * @param criteria The object which holds all the filters, which the entities should match.
      * @return the number of matching entities.
      */
@@ -78,6 +86,7 @@ public class MessageQueryService extends QueryService<Message> {
 
     /**
      * Function to convert {@link MessageCriteria} to a {@link Specification}
+     *
      * @param criteria The object which holds all the filters, which the entities should match.
      * @return the matching {@link Specification} of the entity.
      */
@@ -112,6 +121,24 @@ public class MessageQueryService extends QueryService<Message> {
                         buildSpecification(
                             criteria.getHeadersId(),
                             root -> root.join(Message_.headers, JoinType.LEFT).get(MessageHeader_.headerId)
+                        )
+                    );
+            }
+            if (criteria.getHeadersKey() != null) {
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getHeadersKey(),
+                            root -> root.join(Message_.headers, JoinType.LEFT).get(MessageHeader_.name)
+                        )
+                    );
+            }
+            if (criteria.getHeadersValue() != null) {
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getHeadersKey(),
+                            root -> root.join(Message_.headers, JoinType.LEFT).get(MessageHeader_.value)
                         )
                     );
             }

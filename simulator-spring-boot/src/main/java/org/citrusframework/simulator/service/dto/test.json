@@ -1,0 +1,42 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/api/pet",
+    "headers": {
+      "x-user-id": [
+        "userX"
+      ]
+    },
+    "queryParams": {
+      "x-user-id": [
+        "userX"
+      ]
+    },
+    "cookies": {
+      "session": [
+        "base64string"
+      ]
+    },
+    "body": "{\"id\": 55, \"name\": \"wauzi\"}"
+  },
+  "response": {
+    "method": "POST",
+    "path": "/api/pet",
+    "headers": {
+      "x-user-id": [
+        "userX"
+      ]
+    },
+    "queryParams": {
+      "x-user-id": [
+        "userX"
+      ]
+    },
+    "cookies": {
+      "session": [
+        "base64string"
+      ]
+    },
+    "body": "{\"id\": 55, \"name\": \"wauzi\"}"
+  }
+}
