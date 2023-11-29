@@ -1,7 +1,8 @@
 package org.citrusframework.simulator.web.rest;
 
+import au.com.dius.pact.core.model.RequestResponsePact;
+import java.util.List;
 import org.citrusframework.simulator.service.criteria.MessageCriteria;
-import org.citrusframework.simulator.service.dto.PactDto;
 import org.citrusframework.simulator.service.impl.PactServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ public class PactResource {
     }
 
     @GetMapping("/data")
-    public ResponseEntity<PactDto> getPactData(MessageCriteria criteria) {
+    public ResponseEntity<List<RequestResponsePact>> getPactData(MessageCriteria criteria) {
         return ResponseEntity.ok(pactService.getPactData(criteria));
     }
 }
