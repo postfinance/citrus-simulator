@@ -16,6 +16,8 @@
 
 package org.citrusframework.simulator;
 
+import static org.citrusframework.http.actions.HttpActionBuilder.http;
+
 import org.citrusframework.annotations.CitrusTest;
 import org.citrusframework.container.BeforeSuite;
 import org.citrusframework.container.SequenceBeforeSuite;
@@ -36,8 +38,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.Test;
 
-import static org.citrusframework.http.actions.HttpActionBuilder.http;
-
 /**
  * @author Christoph Deppisch
  */
@@ -47,8 +47,8 @@ public class SimulatorSwaggerIT extends TestNGCitrusSpringSupport {
 
     /** Test Http REST client */
     @Autowired
-    @Qualifier("petstoreClient")
-    private HttpClient petstoreClient;
+    @Qualifier("petstoreClientV2")
+    private HttpClient petstoreClientV2;
 
     /** Client to access simulator user interface */
     @Autowired
@@ -56,7 +56,7 @@ public class SimulatorSwaggerIT extends TestNGCitrusSpringSupport {
     private HttpClient simulatorUiClient;
 
     @CitrusTest
-    public void testUiInfo() {
+    public void uiInfoShouldSucceed() {
         $(http().client(simulatorUiClient)
                 .send()
                 .get("/api/manage/info")
@@ -80,13 +80,13 @@ public class SimulatorSwaggerIT extends TestNGCitrusSpringSupport {
     }
 
     @CitrusTest
-    public void testAddPet() {
+    public void addPetShouldSucceed() {
         variable("name", "hasso");
         variable("category", "dog");
         variable("tags", "huge");
         variable("status", "pending");
 
-        $(http().client(petstoreClient)
+        $(http().client(petstoreClientV2)
                 .send()
                 .post("/pet")
                 .message()
@@ -94,35 +94,80 @@ public class SimulatorSwaggerIT extends TestNGCitrusSpringSupport {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new Resources.ClasspathResource("templates/pet.json")));
 
-        $(http().client(petstoreClient)
+        $(http().client(petstoreClientV2)
                 .receive()
                 .response(HttpStatus.OK));
     }
 
     @CitrusTest
-    public void testDeletePet() {
+    public void addPetShouldFailOnMissingName() {
+        variable("category", "dog");
+        variable("tags", "huge");
+        variable("status", "pending");
+
+        $(http().client(petstoreClientV2)
+            .send()
+            .post("/pet")
+            .message()
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(new Resources.ClasspathResource("templates/pet_invalid.json")));
+
+        $(http().client(petstoreClientV2)
+            .receive()
+            .response(HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+    @CitrusTest
+    public void deletePetShouldSucceed() {
         variable("id", "citrus:randomNumber(10)");
 
-        $(http().client(petstoreClient)
+        $(http().client(petstoreClientV2)
                 .send()
                 .delete("/pet/${id}"));
 
-        $(http().client(petstoreClient)
+        $(http().client(petstoreClientV2)
                 .receive()
                 .response(HttpStatus.OK));
     }
 
     @CitrusTest
-    public void testGetPetById() {
+    public void deletePetShouldFailOnWrongIdFormat() {
+
+        $(http().client(petstoreClientV2)
+            .send()
+            .delete("/pet/xxxx"));
+
+        $(http().client(petstoreClientV2)
+            .receive()
+            .response(HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+//    @CitrusTest
+//    public void testDeletePetByOpenApi() {
+//        variable("id", "citrus:randomNumber(10)");
+//$(openapi("Petstore/1.0.1").client(pingClient))
+//        $(http().client(petstoreClient)
+//            .send()
+//            .delete("/pet/${id}"));
+//
+//        $(http().client(petstoreClient)
+//            .receive()
+//            .response(HttpStatus.OK));
+//    }
+
+    @CitrusTest
+    public void getPetByIdShouldSucceed() {
         variable("id", "citrus:randomNumber(10)");
 
-        $(http().client(petstoreClient)
+        $(http().client(petstoreClientV2)
                 .send()
                 .get("/pet/${id}")
                 .message()
+                .header("api_key", "xxx_api_key")
                 .accept(MediaType.APPLICATION_JSON_VALUE));
 
-        $(http().client(petstoreClient)
+        $(http().client(petstoreClientV2)
                 .receive()
                 .response(HttpStatus.OK)
                 .message()
@@ -131,13 +176,28 @@ public class SimulatorSwaggerIT extends TestNGCitrusSpringSupport {
     }
 
     @CitrusTest
-    public void testUpdatePet() {
+    public void getPetByIdShouldFailOnMissingApiKey() {
+        variable("id", "citrus:randomNumber(10)");
+
+        $(http().client(petstoreClientV2)
+            .send()
+            .get("/pet/${id}")
+            .message()
+            .accept(MediaType.APPLICATION_JSON_VALUE));
+
+        $(http().client(petstoreClientV2)
+            .receive()
+            .response(HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+    @CitrusTest
+    public void updatePetShouldSucceed() {
         variable("name", "catty");
         variable("category", "cat");
         variable("tags", "cute");
         variable("status", "sold");
 
-        $(http().client(petstoreClient)
+        $(http().client(petstoreClientV2)
                 .send()
                 .put("/pet")
                 .message()
@@ -145,21 +205,21 @@ public class SimulatorSwaggerIT extends TestNGCitrusSpringSupport {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new Resources.ClasspathResource("templates/pet.json")));
 
-        $(http().client(petstoreClient)
+        $(http().client(petstoreClientV2)
                 .receive()
                 .response(HttpStatus.OK));
     }
 
     @CitrusTest
-    public void testFindByStatus() {
-        $(http().client(petstoreClient)
+    public void findByStatusShouldSucceed() {
+        $(http().client(petstoreClientV2)
                 .send()
                 .get("/pet/findByStatus")
                 .message()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .queryParam("status", "pending"));
 
-        $(http().client(petstoreClient)
+        $(http().client(petstoreClientV2)
                 .receive()
                 .response(HttpStatus.OK)
                 .message()
@@ -168,28 +228,28 @@ public class SimulatorSwaggerIT extends TestNGCitrusSpringSupport {
     }
 
     @CitrusTest
-    public void testFindByStatusMissingQueryParameter() {
-        $(http().client(petstoreClient)
+    public void findByStatusShouldFailOnMissingQueryParameter() {
+        $(http().client(petstoreClientV2)
                 .send()
                 .get("/pet/findByStatus")
                 .message()
                 .accept(MediaType.APPLICATION_JSON_VALUE));
 
-        $(http().client(petstoreClient)
+        $(http().client(petstoreClientV2)
                 .receive()
                 .response(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
     @CitrusTest
-    public void testFindByTags() {
-        $(http().client(petstoreClient)
+    public void findByTagsShouldSucceed() {
+        $(http().client(petstoreClientV2)
                 .send()
                 .get("/pet/findByTags")
                 .message()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .queryParam("tags", "huge,cute"));
 
-        $(http().client(petstoreClient)
+        $(http().client(petstoreClientV2)
                 .receive()
                 .response(HttpStatus.OK)
                 .message()
@@ -198,35 +258,53 @@ public class SimulatorSwaggerIT extends TestNGCitrusSpringSupport {
     }
 
     @CitrusTest
-    public void testPlaceOrder() {
-        $(http().client(petstoreClient)
+    public void placeOrderShouldSucceed() {
+        $(http().client(petstoreClientV2)
                 .send()
                 .post("/store/order")
                 .message()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new Resources.ClasspathResource("templates/order.json")));
+                .body(new Resources.ClasspathResource("templates/order.json"))
+                .header("api_key", "xxx_api_key"))        ;
 
-        $(http().client(petstoreClient)
+        $(http().client(petstoreClientV2)
                 .receive()
                 .response(HttpStatus.OK));
     }
 
     @CitrusTest
-    public void testLoginUser() {
-        $(http().client(petstoreClient)
+    public void placeOrderShouldFailOnInvalidDateFormat() {
+        $(http().client(petstoreClientV2)
+            .send()
+            .post("/store/order")
+            .message()
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(new Resources.ClasspathResource("templates/order_invalid_date.json"))
+            .header("api_key", "xxx_api_key"))        ;
+
+        $(http().client(petstoreClientV2)
+            .receive()
+            .response(HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+    @CitrusTest
+    public void loginUserShouldSucceed() {
+        $(http().client(petstoreClientV2)
                 .send()
                 .get("/user/login")
                 .queryParam("username", "citrus:randomString(10)")
                 .queryParam("password", "citrus:randomString(8)")
                 .message()
-                .accept("text/plain"));
+                .header("api_key", "xxx_api_key")
+                .accept(MediaType.APPLICATION_JSON_VALUE));
 
-        $(http().client(petstoreClient)
+        $(http().client(petstoreClientV2)
                 .receive()
                 .response(HttpStatus.OK)
                 .message()
-                .type(MessageType.PLAINTEXT)
+                .type(MessageType.JSON)
                 .body("@notEmpty()@")
                 .header("X-Rate-Limit", "@isNumber()@")
                 .header("X-Expires-After", "@matchesDatePattern('yyyy-MM-dd'T'hh:mm:ss')@"));
@@ -236,7 +314,7 @@ public class SimulatorSwaggerIT extends TestNGCitrusSpringSupport {
     public static class EndpointConfig {
 
         @Bean
-        public HttpClient petstoreClient() {
+        public HttpClient petstoreClientV2() {
             return CitrusEndpoints.http().client()
                     .requestUrl(String.format("http://localhost:%s/petstore/v2", 8080))
                     .build();
