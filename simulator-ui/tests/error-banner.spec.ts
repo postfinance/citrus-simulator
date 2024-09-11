@@ -7,6 +7,7 @@ test.beforeEach(async ({ page }) => {
 
 test('should show error banner if there is an error code in the backend response while loading any page', async ({ page }) => {
   await mockErrorResponseOfAllApiUrls(page);
+
   await goToAllPagesAndCheckURLPlusContent(page, thingsToCheckOnAllPages);
 });
 
