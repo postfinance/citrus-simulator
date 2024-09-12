@@ -31,8 +31,8 @@ export default defineConfig({
     trace: 'on-first-retry',
     video: {
       mode: 'retain-on-failure' ,
-      size: { width: 640, height: 480 }
-    }
+      size: { width: 640, height: 480 },
+    },
   },
 
   /* Configure projects for major browsers */
