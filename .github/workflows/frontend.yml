@@ -70,6 +70,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: See if current directory is the right one
+        run: ls
+        working-directory: simulator-ui
       - name: Install dependencies
         run: npm ci --cache .npm --force
         working-directory: simulator-ui
@@ -82,7 +85,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: test-results/**/*.webm
+          path: test-results/
           retention-days: 30
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
@@ -90,3 +93,6 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+      - name: See if current directory test report is generated
+        run: ls
+        working-directory: simulator-ui
