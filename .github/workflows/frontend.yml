@@ -70,9 +70,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: See if current directory is the right one
-        run: ls
-        working-directory: simulator-ui
       - name: Install dependencies
         run: npm ci --cache .npm --force
         working-directory: simulator-ui
@@ -85,6 +82,8 @@ jobs:
           pwd
           ls
           npm run e2e
+          echo "------------------------------are reports existent?-------------------------"
+          ls
         working-directory: simulator-ui
       - uses: actions/upload-artifact@v4
         with:
