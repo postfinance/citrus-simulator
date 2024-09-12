@@ -87,5 +87,5 @@ jobs:
           retention-days: 30
       - uses: actions/upload-artifact@v4
         with:
-        name: test-results
-        path: playwright-failed-test-videos/
+          name: test-results
+          path: playwright-failed-test-videos/
