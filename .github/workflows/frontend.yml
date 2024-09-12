@@ -80,7 +80,11 @@ jobs:
         run: npx playwright install --with-deps
         working-directory: simulator-ui
       - name: Run Playwright tests
-        run: npm run e2e
+        run: |
+          echo "Current directory is:"
+          pwd
+          ls
+          npm run e2e
         working-directory: simulator-ui
       - uses: actions/upload-artifact@v4
         with:
@@ -93,6 +97,3 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
-      - name: See if current directory test report is generated
-        run: ls
-        working-directory: simulator-ui
