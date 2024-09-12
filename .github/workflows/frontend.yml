@@ -86,6 +86,7 @@ jobs:
           ls
         working-directory: simulator-ui
       - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
         with:
           name: test-results
           path: test-results/
