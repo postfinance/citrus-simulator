@@ -89,3 +89,4 @@ jobs:
         with:
           name: test-results
           path: playwright-failed-test-videos/
+          retention-days: 30
