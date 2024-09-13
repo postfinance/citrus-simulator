@@ -77,11 +77,7 @@ jobs:
         run: npx playwright install --with-deps
         working-directory: simulator-ui
       - name: Run Playwright tests
-        run: |
-          echo "Current directory is:"
-          pwd
-          ls
-          npm run e2e || ls
+        run: npm run e2e
         working-directory: simulator-ui
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
