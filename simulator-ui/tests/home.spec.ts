@@ -1,27 +1,30 @@
-import { expect, Page, test } from '@playwright/test';
+import {expect, Page, test} from '@playwright/test';
 
-import { clickOnLinkAndCheckIfTabOpensWithCorrectURL, mockBackendResponse } from './helpers/helper-functions';
+import {clickOnLinkAndCheckIfTabOpensWithCorrectURL, mockBackendResponse} from './helpers/helper-functions';
 
 let nbOfSuccessfulTests = 90;
 let nbOfFailedTests = 10;
 let nbOfTotalTests = nbOfSuccessfulTests + nbOfFailedTests;
 
 const scenarioSummariesLinkFilterTriples = [
-  { testName: 'totalSimulationsButton', link: /.*\/scenario-result*/, filterText: '' },
-  { testName: 'successfulSimulationsButton', link: /.*\/scenario-result*/, filterText: 'SUCCESS' },
-  { testName: 'failedSimulationsButton', link: /.*\/scenario-result*/, filterText: 'FAILURE' },
+  {testName: 'totalSimulationsButton', link: /.*\/scenario-result*/, filterText: ''},
+  {testName: 'successfulSimulationsButton', link: /.*\/scenario-result*/, filterText: 'SUCCESS'},
+  {testName: 'failedSimulationsButton', link: /.*\/scenario-result*/, filterText: 'FAILURE'},
 ];
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({page}) => {
   await mockBackendResponse(page, '**/api/test-results/count-by-status', {
     successful: nbOfSuccessfulTests,
     failed: nbOfFailedTests,
     total: nbOfTotalTests,
   });
+  await mockBackendResponse(page, '**/api/manage/info', {
+    config: {'reset-results-enabled': 'true',}
+  });
   await page.goto('http://localhost:9000/');
 });
 
-test('should have title, disclaimer, refresh button, reset button, feedback option, summary-tabs and footer', async ({ page }) => {
+test('should have title, disclaimer, refresh button, reset button, feedback option, summary-tabs and footer', async ({page}) => {
   const visibleElements: string[] = [
     'disclaimer',
     'refreshListButton',
@@ -39,11 +42,11 @@ test('should have title, disclaimer, refresh button, reset button, feedback opti
   }
 });
 
-test('check if summary-tab displays right percentage with round numbers', async ({ page }) => {
+test('check if summary-tab displays right percentage with round numbers', async ({page}) => {
   await checkIfSummaryTabsAreDisplayingRightNumbers(page, nbOfTotalTests, nbOfSuccessfulTests, nbOfFailedTests);
 });
 
-test('total, successful, failed tabs should display percentage in simulations count rounded to two decimal numbers', async ({ page }) => {
+test('total, successful, failed tabs should display percentage in simulations count rounded to two decimal numbers', async ({page}) => {
   const successfulTestsBig = 746039;
   const failedTestsBig = 490;
   const totalTestsBig = successfulTestsBig + failedTestsBig;
@@ -58,12 +61,12 @@ test('total, successful, failed tabs should display percentage in simulations co
   await checkIfSummaryTabsAreDisplayingRightNumbers(page, totalTestsBig, successfulTestsBig, failedTestsBig);
 });
 
-test('should move to right page with feedback resp suggestion link', async ({ page }) => {
+test('should move to right page with feedback resp suggestion link', async ({page}) => {
   await clickOnLinkAndCheckIfTabOpensWithCorrectURL(page, 'feedbackLinkStarGithub', /.*\/github\.com\/citrusframework\/citrus-simulator/);
   await clickOnLinkAndCheckIfTabOpensWithCorrectURL(page, 'feedbackAndSuggestionLink', /.*\/github\.com.*issue/);
 });
 
-test('should move to scenario-results page with right search field params after click on detail buttons', async ({ page }) => {
+test('should move to scenario-results page with right search field params after click on detail buttons', async ({page}) => {
   for (const element of scenarioSummariesLinkFilterTriples) {
     await page.goto('http://localhost:9000/');
     await page.getByTestId(element.testName).click();
@@ -72,7 +75,7 @@ test('should move to scenario-results page with right search field params after 
   }
 });
 
-test('should have updated total, successful, failed tabs after refresh button clicked positive test', async ({ page }) => {
+test('should have updated total, successful, failed tabs after refresh button clicked positive test', async ({page}) => {
   await checkIfSummaryTabsAreDisplayingRightNumbers(page, nbOfTotalTests, nbOfSuccessfulTests, nbOfFailedTests);
 
   nbOfFailedTests -= 10;
@@ -88,8 +91,8 @@ test('should have updated total, successful, failed tabs after refresh button cl
 });
 
 test('(test if frontend trusts backend blindly) should have updated total, successful, failed tabs after refresh button clicked negative test with false total', async ({
-  page,
-}) => {
+                                                                                                                                                                          page,
+                                                                                                                                                                        }) => {
   await checkIfSummaryTabsAreDisplayingRightNumbers(page, nbOfTotalTests, nbOfSuccessfulTests, nbOfFailedTests);
   nbOfFailedTests -= 10; // so the total will be wrong!
   const newCorrectTotal: number = nbOfTotalTests - 10;
@@ -105,7 +108,7 @@ test('(test if frontend trusts backend blindly) should have updated total, succe
   expect(nbOfTotalTests === newCorrectTotal).toBeFalsy();
 });
 
-test('should have same total, successful, failed tabs after cancel deletion via close-Button and cancel-Button', async ({ page }) => {
+test('should have same total, successful, failed tabs after cancel deletion via close-Button and cancel-Button', async ({page}) => {
   await checkIfSummaryTabsAreDisplayingRightNumbers(page, nbOfTotalTests, nbOfSuccessfulTests, nbOfFailedTests);
   const closeButtons = ['testResultDeleteDialogCloseButton', 'testResultDeleteDialogCancelButton'];
   let deleteRequestWasMade = false;
@@ -126,7 +129,7 @@ test('should have same total, successful, failed tabs after cancel deletion via 
   }
 });
 
-test('should have reset total, successful, failed tabs after confirmed deletion with (200, OK) response', async ({ page }) => {
+test('should have reset total, successful, failed tabs after confirmed deletion with (200, OK) response', async ({page}) => {
   await checkIfSummaryTabsAreDisplayingRightNumbers(page, nbOfTotalTests, nbOfSuccessfulTests, nbOfFailedTests);
   await page.getByTestId('resetButton').click();
   await expect(page.getByTestId('testResultDeleteDialogHeading')).toBeVisible();
@@ -179,10 +182,10 @@ const checkIfSummaryTabsAreDisplayingRightNumbers = async (
   for (const percentageDisplay of summarySelectorToAbsoluteValueMapping) {
     await expect(page.getByTestId(percentageDisplay.testSelector)).toHaveText(
       percentageDisplay.value +
-        ` (${((percentageDisplay.value / totalTests) * 100).toLocaleString(undefined, {
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 0,
-        })} %)`,
+      ` (${((percentageDisplay.value / totalTests) * 100).toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+      })} %)`,
     );
   }
 };
