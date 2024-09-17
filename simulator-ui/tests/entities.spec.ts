@@ -138,26 +138,30 @@ entityPageContentMap.forEach((contentObject: EntityPageContentObject) => {
   });
 });
 
-test('should show message headers when clicking button on message row', async ({ page }) => {
-  const contentObject = entityPageContentMap[0];
-  await mockBackendResponse(page, contentObject.apiUrl, contentObject.contentJson);
+test.describe('message entity table', () => {
+  test('should show message headers when clicking button', async ({page}) => {
+    const contentObject = entityPageContentMap[0];
+    await mockBackendResponse(page, contentObject.apiUrl, contentObject.contentJson);
 
-  await page.goto(contentObject.entityUrl);
+    await page.goto(contentObject.entityUrl);
 
-  await page.getByTestId('filterOtherEntityButton').nth(0).click();
-  await expect(page.getByTestId('filterValue')).toHaveText('messageId.in: 1');
-  await expect(page).toHaveURL('http://localhost:9000/message-header?filter%5BmessageId.in%5D=1');
+    await page.getByTestId('filterOtherEntityButton').nth(0).click();
+    await expect(page.getByTestId('filterValue')).toHaveText('messageId.in: 1');
+    await expect(page).toHaveURL('http://localhost:9000/message-header?filter%5BmessageId.in%5D=1');
+  });
 });
 
-test('should show test parameters when clicking on button in test results row', async ({ page }) => {
-  const contentObject = entityPageContentMap[4];
-  await mockBackendResponse(page, contentObject.apiUrl, contentObject.contentJson);
+test.describe('test results entity table', () => {
+  test('should show test parameters when clicking on button', async ({page}) => {
+    const contentObject = entityPageContentMap[4];
+    await mockBackendResponse(page, contentObject.apiUrl, contentObject.contentJson);
 
-  await page.goto(contentObject.entityUrl);
+    await page.goto(contentObject.entityUrl);
 
-  await page.getByTestId('testParametersButton').click();
-  await expect(page.getByTestId('filterValue')).toHaveText('testResultId.in: 1');
-  await expect(page).toHaveURL('http://localhost:9000/test-parameter?filter%5BtestResultId.in%5D=1');
+    await page.getByTestId('testParametersButton').click();
+    await expect(page.getByTestId('filterValue')).toHaveText('testResultId.in: 1');
+    await expect(page).toHaveURL('http://localhost:9000/test-parameter?filter%5BtestResultId.in%5D=1');
+  });
 });
 
 test('should display table of test parameters', async ({ page }) => {
