@@ -22,9 +22,9 @@ export const entityChildLinks: NavbarElementLinkPair[] = [
 
 // a list of every navbar element, which leads directly to another page
 export const navbarElementLinkPairs: NavbarElementLinkPair[] = [
-{ testName: 'navigationScenariosLink', link: /.*scenario*/, apiLink: '**/api/scenarios*' },
-{ testName: 'navigationScenarioExecutionsLink', link: /.*scenario-result*/, apiLink: '**/api/scenario-executions*' },
-{ testName: 'navigationEntitiesLink', childElements: entityChildLinks },
+  { testName: 'navigationScenariosLink', link: /.*scenario*/, apiLink: '**/api/scenarios*' },
+  { testName: 'navigationScenarioExecutionsLink', link: /.*scenario-result*/, apiLink: '**/api/scenario-executions*' },
+  { testName: 'navigationEntitiesLink', childElements: entityChildLinks },
 ];
 
 export const clickOnLinkAndCheckIfTabOpensWithCorrectURL = async (
@@ -60,48 +60,52 @@ export const mockBackendResponse = async (
 
 export const mockErrorResponseForAllNavbarLinkedSites = async (page: Page): Promise<void> => {
   for (const element of navbarElementLinkPairs) {
-    if(element.childElements){
-      for(const child of element.childElements){
-        if(child.apiLink){
+    if (element.childElements) {
+      for (const child of element.childElements) {
+        if (child.apiLink) {
           await mock500ErrorResponseForApiURL(page, child.apiLink);
         }
       }
     }
-    if(element.apiLink){
+    if (element.apiLink) {
       await mock500ErrorResponseForApiURL(page, element.apiLink);
     }
   }
 };
 
-const mock500ErrorResponseForApiURL = async (page: Page, apiLink: string) : Promise<void> => {
+const mock500ErrorResponseForApiURL = async (page: Page, apiLink: string): Promise<void> => {
   await page.route(apiLink, async route => {
     await route.fulfill({
       status: 500,
     });
   });
-}
+};
 
 export const goToAllNavigationTabsAndOptionallyValidateContent = async (
   page: Page,
   validatePageContent?: (page: Page) => Promise<void>,
 ): Promise<void> => {
   for (const element of navbarElementLinkPairs) {
-    if(element.childElements){
-      for(const child of element.childElements){
+    if (element.childElements) {
+      for (const child of element.childElements) {
         await page.getByTestId(element.testName).click();
         await clickOnNavbarElementAndOptionallyValidateContent(page, child, validatePageContent);
       }
     }
-  await clickOnNavbarElementAndOptionallyValidateContent(page, element, validatePageContent);
+    await clickOnNavbarElementAndOptionallyValidateContent(page, element, validatePageContent);
   }
 };
 
-const clickOnNavbarElementAndOptionallyValidateContent = async (page: Page, navbarElement: NavbarElementLinkPair, validatePageContent?: (page: Page) => Promise<void>) : Promise<void> => {
+const clickOnNavbarElementAndOptionallyValidateContent = async (
+  page: Page,
+  navbarElement: NavbarElementLinkPair,
+  validatePageContent?: (page: Page) => Promise<void>,
+): Promise<void> => {
   await page.getByTestId(navbarElement.testName).click();
-  if(navbarElement.link){
+  if (navbarElement.link) {
     await expect(page).toHaveURL(navbarElement.link);
   }
   if (validatePageContent) {
     await validatePageContent(page);
   }
-}
+};

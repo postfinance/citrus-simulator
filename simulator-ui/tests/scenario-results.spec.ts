@@ -1,5 +1,5 @@
-import {expect, Locator, test} from '@playwright/test';
-import {mockBackendResponse} from './helpers/helper-functions';
+import { expect, Locator, test } from '@playwright/test';
+import { mockBackendResponse } from './helpers/helper-functions';
 import {
   messageHeaderJson,
   messageJson,
@@ -9,7 +9,7 @@ import {
   twoScenarioExecutions,
 } from './helpers/scenario-results-jsons';
 
-test('should display input form', async ({page}) => {
+test('should display input form', async ({ page }) => {
   await page.goto('http://localhost:9000/scenario-result/');
 
   await expect(page.getByTestId('itemsPerPageSelect')).toBeVisible();
@@ -21,7 +21,7 @@ test('should display input form', async ({page}) => {
   await expect(page.getByTestId('scenarioExecutionHeaderFilterInput')).toBeVisible();
 });
 
-test('should filter with input form', async ({page}) => {
+test('should filter with input form', async ({ page }) => {
   await page.goto('http://localhost:9000/scenario-result/');
   await mockBackendResponse(page, '**/api/scenario-executions?page=0&size=10&sort=executionId,asc', twoScenarioExecutions);
   await mockBackendResponse(
@@ -46,7 +46,7 @@ const fillDatePickerField = async (dateField: Locator, date: string, time: strin
   await dateField.pressSequentially(time);
 };
 
-test('should display table headers for scenario executions', async ({page}) => {
+test('should display table headers for scenario executions', async ({ page }) => {
   await mockBackendResponse(page, '**/api/scenario-executions*', scenarioExecutionJsonWithoutDetails);
 
   await page.goto('http://localhost:9000/scenario-result/');
@@ -59,7 +59,7 @@ test('should display table headers for scenario executions', async ({page}) => {
   await expect(page.locator('th :text("Error Message")')).toHaveCount(1);
 });
 
-test('should display table row for scenario executions', async ({page}) => {
+test('should display table row for scenario executions', async ({ page }) => {
   await mockBackendResponse(page, '**/api/scenario-executions*', scenarioExecutionJsonWithoutDetails);
 
   await page.goto('http://localhost:9000/scenario-result/');
@@ -79,14 +79,14 @@ test('should display table row for scenario executions', async ({page}) => {
   await expect(page.locator('tr :text("Parameters")')).toHaveCount(1);
 });
 
-test('should display help dialog after clicking button', async ({page}) => {
+test('should display help dialog after clicking button', async ({ page }) => {
   await page.goto('http://localhost:9000/scenario-result/');
 
   await page.getByTestId('scenarioExecutionOpenHelpButton').click();
   await expect(page.getByTestId('helpDialog')).toBeVisible();
 });
 
-test('should display filter message header popup after clicking button', async ({page}) => {
+test('should display filter message header popup after clicking button', async ({ page }) => {
   await page.goto('http://localhost:9000/scenario-result/');
 
   await page.getByTestId('scenarioExecutionOpenFilterButton').click();
@@ -99,7 +99,7 @@ test('should display filter message header popup after clicking button', async (
   await expect(page.getByTestId('applyHeaderFilterButton')).toBeVisible();
 });
 
-test('should filter message headers with header name and header value', async ({page}) => {
+test('should filter message headers with header name and header value', async ({ page }) => {
   await page.goto('http://localhost:9000/scenario-result/');
 
   await page.getByTestId('scenarioExecutionOpenFilterButton').click();
@@ -113,7 +113,7 @@ test('should filter message headers with header name and header value', async ({
   await expect(page.getByTestId('scenarioExecutionHeaderFilterInput')).toHaveValue('HeaderName1=HeaderValue1; HeaderName2~HeaderValue2');
 });
 
-test('should delete second message header filter', async ({page}) => {
+test('should delete second message header filter', async ({ page }) => {
   await page.goto('http://localhost:9000/scenario-result/');
 
   await page.getByTestId('scenarioExecutionOpenFilterButton').click();
@@ -126,7 +126,7 @@ test('should delete second message header filter', async ({page}) => {
   await expect(page.locator('#header-1-value')).toHaveCount(0);
 });
 
-test('should clear all filters with button', async ({page}) => {
+test('should clear all filters with button', async ({ page }) => {
   await page.goto('http://localhost:9000/scenario-result/');
 
   await page.getByTestId('scenarioExecutionFilterInput').fill('Test Scenario');
@@ -152,7 +152,7 @@ test('should clear all filters with button', async ({page}) => {
   await expect(page.getByTestId('scenarioExecutionHeaderFilterInput')).toBeEmpty();
 });
 
-test('should clear all filters with icon', async ({page}) => {
+test('should clear all filters with icon', async ({ page }) => {
   await page.goto('http://localhost:9000/scenario-result/');
 
   await page.getByTestId('scenarioExecutionFilterInput').fill('Test Scenario');
@@ -178,13 +178,13 @@ test('should clear all filters with icon', async ({page}) => {
   await expect(page.getByTestId('scenarioExecutionHeaderFilterInput')).toBeEmpty();
 });
 
-test('should display detail view of scenario execution', async ({page}) => {
+test('should display detail view of scenario execution', async ({ page }) => {
   await mockBackendResponse(page, '**/api/scenario-executions*', scenarioExecutionJsonWithoutDetails);
   await mockBackendResponse(page, '**/api/scenario-executions/752603', scenarioExecutionJsonWithDetails);
 
   await page.goto('http://localhost:9000/scenario-result/');
 
-  await page.getByRole('link', {name: '752603'}).click();
+  await page.getByRole('link', { name: '752603' }).click();
   await expect(page).toHaveURL('http://localhost:9000/scenario-execution/752603/view');
   await expect(page.getByTestId('scenarioExecutionId')).toHaveText('752603');
   await expect(page.getByTestId('scenarioExecutionStartDate')).toHaveText('27 Jun 2024 10:59:03');
@@ -200,13 +200,13 @@ test('should display detail view of scenario execution', async ({page}) => {
   );
 });
 
-test('should display detail view of message', async ({page}) => {
+test('should display detail view of message', async ({ page }) => {
   await mockBackendResponse(page, '**/api/scenario-executions?page=0&size=10&sort=executionId,asc', scenarioExecutionJsonWithoutDetails);
   await mockBackendResponse(page, '**/api/scenario-executions/752603', scenarioExecutionJsonWithDetails);
   await mockBackendResponse(page, '**/api/messages/20', messageJson);
 
   await page.goto('http://localhost:9000/scenario-result/');
-  await page.getByRole('link', {name: '752603'}).click();
+  await page.getByRole('link', { name: '752603' }).click();
   await expect(page).toHaveURL('http://localhost:9000/scenario-execution/752603/view');
   await page.getByTestId('scenarioMessagesEntityMessageLink').click();
 
@@ -231,14 +231,14 @@ test('should display detail view of message', async ({page}) => {
   await expect(page.locator('tr :text("22 Aug 2024 08:38:56")').nth(3)).toHaveCount(1);
 });
 
-test('should display detail view of message header', async ({page}) => {
+test('should display detail view of message header', async ({ page }) => {
   await mockBackendResponse(page, '**/api/scenario-executions?page=0&size=10&sort=executionId,asc', scenarioExecutionJsonWithoutDetails);
   await mockBackendResponse(page, '**/api/scenario-executions/752603', scenarioExecutionJsonWithDetails);
   await mockBackendResponse(page, '**/api/messages/20', messageJson);
   await mockBackendResponse(page, '**/api/message-headers/214', messageHeaderJson);
 
   await page.goto('http://localhost:9000/scenario-result/');
-  await page.getByRole('link', {name: '752603'}).click();
+  await page.getByRole('link', { name: '752603' }).click();
   await expect(page).toHaveURL('http://localhost:9000/scenario-execution/752603/view');
   await page.getByTestId('scenarioMessagesEntityMessageLink').click();
   await expect(page).toHaveURL('http://localhost:9000/message/20/view');
@@ -251,14 +251,14 @@ test('should display detail view of message header', async ({page}) => {
   await expect(page.getByTestId('messageHeaderDetailsLastModified')).toHaveText('22 Aug 2024 08:38:56');
 });
 
-test('should display detail view of scenario action', async ({page}) => {
+test('should display detail view of scenario action', async ({ page }) => {
   await mockBackendResponse(page, '**/api/scenario-executions*', scenarioExecutionJsonWithoutDetails);
   await mockBackendResponse(page, '**/api/scenario-executions/752603', scenarioExecutionJsonWithDetails);
   await mockBackendResponse(page, '**/api/scenario-actions/29', scenarioActionJson);
 
   await page.goto('http://localhost:9000/scenario-result/');
 
-  await page.getByRole('link', {name: '752603'}).click();
+  await page.getByRole('link', { name: '752603' }).click();
   await expect(page).toHaveURL('http://localhost:9000/scenario-execution/752603/view');
   await page.getByTestId('scenarioActionsEntityScenarioActionLink').nth(0).click();
   await expect(page).toHaveURL('http://localhost:9000/scenario-action/29/view');
