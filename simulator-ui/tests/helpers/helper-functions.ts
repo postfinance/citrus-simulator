@@ -58,27 +58,19 @@ export const mockBackendResponse = async (
   });
 };
 
-export const mockErrorResponseForAllNavbarLinkedSites = async (page: Page): Promise<void> => {
+export const mockResponseForAllNavbarLinkedSites = async (page: Page, responseMockFunction: (page: Page, apiLink: string) => Promise<void>): Promise<void> => {
   for (const element of navbarElementLinkPairs) {
     if (element.childElements) {
       for (const child of element.childElements) {
         if (child.apiLink) {
-          await mock500ErrorResponseForApiURL(page, child.apiLink);
+          await responseMockFunction(page, child.apiLink);
         }
       }
     }
     if (element.apiLink) {
-      await mock500ErrorResponseForApiURL(page, element.apiLink);
+      await responseMockFunction(page, element.apiLink);
     }
   }
-};
-
-const mock500ErrorResponseForApiURL = async (page: Page, apiLink: string): Promise<void> => {
-  await page.route(apiLink, async route => {
-    await route.fulfill({
-      status: 500,
-    });
-  });
 };
 
 export const goToAllNavigationTabsAndOptionallyValidateContent = async (
