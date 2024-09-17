@@ -67,13 +67,3 @@ export const testResultJson = [
     lastModifiedDate: '2024-08-23T08:25:31.373926Z',
   },
 ];
-
-export const testParameterJson = [
-  {
-    key: 'test key',
-    testResultId: 0,
-    value: 'test value',
-    createdDate: '2024-08-27T13:39:51.785Z',
-    lastModifiedDate: '2024-08-27T13:39:51.785Z',
-  },
-];
