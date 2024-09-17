@@ -128,14 +128,12 @@ const entityPageContentMap: EntityPageContentObject[] = [
 
 entityPageContentMap.forEach((contentObject: EntityPageContentObject) => {
   test(`${contentObject.testName}`, async ({ page }) => {
-    // 'first test'
     await mockBackendResponse(page, contentObject.apiUrl, contentObject.contentJson);
 
     await page.goto(contentObject.entityUrl);
 
     await expect(page.locator('th :text("ID")').nth(0)).toHaveCount(1);
     await checkEntityPageContentValueAndVisibility(page, contentObject);
-    // 'second test'
     await checkIfRefreshButtonWorks(page, contentObject);
   });
 });

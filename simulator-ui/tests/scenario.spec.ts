@@ -165,7 +165,7 @@ test('should show error message if launch failed after click on the launch butto
   await expect(page).toHaveURL(/.*localhost:9000\/scenario/);
 });
 
-test('should go to detail view of a scenario (not type starter) and then go back', async ({ page }) => {
+test('should go to detail view of a scenario type MESSAGE_TRIGGERED check for content and and then go back', async ({ page }) => {
   const allVisibleDetailElements = [
     'scenarioDetailsHeading',
     'scenarioDetailsName',

@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { clickOnLinkAndCheckIfTabOpensWithCorrectURL, goToAllPagesAndCheckURLPlusContent } from './helpers/helper-functions';
+import { clickOnLinkAndCheckIfTabOpensWithCorrectURL, goToAllNavigationTabsAndOptionallyValidateContent } from './helpers/helper-functions';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('http://localhost:9000/');
 });
 
 test('should move to all pages as intended', async ({ page }) => {
-  await goToAllPagesAndCheckURLPlusContent(page);
+  await goToAllNavigationTabsAndOptionallyValidateContent(page);
 });
 
 test('should move to scenario-result and then move back home ', async ({ page }) => {
