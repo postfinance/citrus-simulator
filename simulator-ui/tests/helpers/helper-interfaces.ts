@@ -15,7 +15,8 @@ interface TestIdValuePair {
 
 export interface NavbarElementLinkPair {
   testName: string;
-  link?: RegExp;
+  expectedLinkRegex?: RegExp;
+  linkSuffix?: string;
   apiLink?: string;
   childElements?: NavbarElementLinkPair[];
 }

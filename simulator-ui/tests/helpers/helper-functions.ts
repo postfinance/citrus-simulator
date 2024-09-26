@@ -3,27 +3,29 @@ import { NavbarElementLinkPair } from './helper-interfaces';
 
 // a list of every navbar link-pair, which appears under the "Entity" dropdown
 export const entityChildLinks: NavbarElementLinkPair[] = [
-  { testName: 'navigationEntitiesMessageLink', link: /.*\/message*/, apiLink: '**/api/messages*' },
-  { testName: 'navigationEntitiesMessageHeaderLink', link: /.*\/message-header*/, apiLink: '**/api/message-headers*' },
+  { testName: 'navigationEntitiesMessageLink', expectedLinkRegex: /.*\/message*/, linkSuffix: '/message', apiLink: '**/api/messages*' },
+  { testName: 'navigationEntitiesMessageHeaderLink', expectedLinkRegex: /.*\/message-header*/, linkSuffix: '/message-header', apiLink: '**/api/message-headers*' },
   {
     testName: 'navigationEntitiesScenarioExecutionLink',
-    link: /.*\/scenario-execution*/,
+    expectedLinkRegex: /.*\/scenario-execution*/,
+    linkSuffix: '/scenario-execution',
     apiLink: '**/api/scenario-executions*',
   },
-  { testName: 'navigationEntitiesScenarioActionLink', link: /.*\/scenario-action*/, apiLink: '**/api/scenario-actions*' },
+  { testName: 'navigationEntitiesScenarioActionLink', expectedLinkRegex: /.*\/scenario-action*/, linkSuffix: '/scenario-action', apiLink: '**/api/scenario-actions*' },
   {
     testName: 'navigationEntitiesScenarioParameterLink',
-    link: /.*\/scenario-parameter*/,
+    expectedLinkRegex: /.*\/scenario-parameter*/,
+    linkSuffix: '/scenario-parameter',
     apiLink: '**/api/scenario-parameters*',
   },
-  { testName: 'navigationEntitiesTestResultLink', link: /.*\/test-result*/, apiLink: '**/api/test-results*' },
-  { testName: 'navigationEntitiesParameterLink', link: /.*\/test-parameter*/, apiLink: '**/api/test-parameters*' },
+  { testName: 'navigationEntitiesTestResultLink', expectedLinkRegex: /.*\/test-result*/, linkSuffix: '/test-result', apiLink: '**/api/test-results*' },
+  { testName: 'navigationEntitiesParameterLink', expectedLinkRegex: /.*\/test-parameter*/, linkSuffix: '/test-parameter', apiLink: '**/api/test-parameters*' },
 ];
 
 // a list of every navbar element, which leads directly to another page
 export const navbarElementLinkPairs: NavbarElementLinkPair[] = [
-  { testName: 'navigationScenariosLink', link: /.*scenario*/, apiLink: '**/api/scenarios*' },
-  { testName: 'navigationScenarioExecutionsLink', link: /.*scenario-result*/, apiLink: '**/api/scenario-executions*' },
+  { testName: 'navigationScenariosLink', expectedLinkRegex: /.*\/scenario*/, linkSuffix: '/scenario', apiLink: '**/api/scenarios*' },
+  { testName: 'navigationScenarioExecutionsLink', expectedLinkRegex: /.*\/scenario-result*/, linkSuffix: '/scenario-result',apiLink: '**/api/scenario-executions*' },
   { testName: 'navigationEntitiesLink', childElements: entityChildLinks },
 ];
 
@@ -94,8 +96,8 @@ const clickOnNavbarElementAndOptionallyValidateContent = async (
   validatePageContent?: (page: Page) => Promise<void>,
 ): Promise<void> => {
   await page.getByTestId(navbarElement.testName).click();
-  if (navbarElement.link) {
-    await expect(page).toHaveURL(navbarElement.link);
+  if (navbarElement.expectedLinkRegex) {
+    await expect(page).toHaveURL(navbarElement.expectedLinkRegex);
   }
   if (validatePageContent) {
     await validatePageContent(page);
