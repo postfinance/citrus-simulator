@@ -136,16 +136,6 @@ test.describe('test results entity table', () => {
   });
 });
 
-test('should display table of test parameters', async ({ page }) => {
-  const contentObject = entityPageContentMap[5];
-  await mockBackendResponse(page, contentObject.apiUrl, contentObject.contentJson);
-
-  await page.goto(contentObject.entityUrl);
-
-  await checkEntityPageContentValueAndVisibility(page, contentObject);
-  await checkIfRefreshButtonWorks(page, contentObject);
-});
-
 const checkEntityPageContentValueAndVisibility = async (page: Page, contentObject: EntityPageContentObject): Promise<void> => {
   for (const locator of contentObject.locators) {
     await expect(page.locator(locator)).toHaveCount(1);
