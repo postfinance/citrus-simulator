@@ -4,28 +4,53 @@ import { NavbarElementLinkPair } from './helper-interfaces';
 // a list of every navbar link-pair, which appears under the "Entity" dropdown
 export const entityChildLinks: NavbarElementLinkPair[] = [
   { testName: 'navigationEntitiesMessageLink', expectedLinkRegex: /.*\/message*/, linkSuffix: '/message', apiLink: '**/api/messages*' },
-  { testName: 'navigationEntitiesMessageHeaderLink', expectedLinkRegex: /.*\/message-header*/, linkSuffix: '/message-header', apiLink: '**/api/message-headers*' },
+  {
+    testName: 'navigationEntitiesMessageHeaderLink',
+    expectedLinkRegex: /.*\/message-header*/,
+    linkSuffix: '/message-header',
+    apiLink: '**/api/message-headers*',
+  },
   {
     testName: 'navigationEntitiesScenarioExecutionLink',
     expectedLinkRegex: /.*\/scenario-execution*/,
     linkSuffix: '/scenario-execution',
     apiLink: '**/api/scenario-executions*',
   },
-  { testName: 'navigationEntitiesScenarioActionLink', expectedLinkRegex: /.*\/scenario-action*/, linkSuffix: '/scenario-action', apiLink: '**/api/scenario-actions*' },
+  {
+    testName: 'navigationEntitiesScenarioActionLink',
+    expectedLinkRegex: /.*\/scenario-action*/,
+    linkSuffix: '/scenario-action',
+    apiLink: '**/api/scenario-actions*',
+  },
   {
     testName: 'navigationEntitiesScenarioParameterLink',
     expectedLinkRegex: /.*\/scenario-parameter*/,
     linkSuffix: '/scenario-parameter',
     apiLink: '**/api/scenario-parameters*',
   },
-  { testName: 'navigationEntitiesTestResultLink', expectedLinkRegex: /.*\/test-result*/, linkSuffix: '/test-result', apiLink: '**/api/test-results*' },
-  { testName: 'navigationEntitiesParameterLink', expectedLinkRegex: /.*\/test-parameter*/, linkSuffix: '/test-parameter', apiLink: '**/api/test-parameters*' },
+  {
+    testName: 'navigationEntitiesTestResultLink',
+    expectedLinkRegex: /.*\/test-result*/,
+    linkSuffix: '/test-result',
+    apiLink: '**/api/test-results*',
+  },
+  {
+    testName: 'navigationEntitiesParameterLink',
+    expectedLinkRegex: /.*\/test-parameter*/,
+    linkSuffix: '/test-parameter',
+    apiLink: '**/api/test-parameters*',
+  },
 ];
 
 // a list of every navbar element, which leads directly to another page
 export const navbarElementLinkPairs: NavbarElementLinkPair[] = [
   { testName: 'navigationScenariosLink', expectedLinkRegex: /.*\/scenario*/, linkSuffix: '/scenario', apiLink: '**/api/scenarios*' },
-  { testName: 'navigationScenarioExecutionsLink', expectedLinkRegex: /.*\/scenario-result*/, linkSuffix: '/scenario-result',apiLink: '**/api/scenario-executions*' },
+  {
+    testName: 'navigationScenarioExecutionsLink',
+    expectedLinkRegex: /.*\/scenario-result*/,
+    linkSuffix: '/scenario-result',
+    apiLink: '**/api/scenario-executions*',
+  },
   { testName: 'navigationEntitiesLink', childElements: entityChildLinks },
 ];
 
@@ -60,7 +85,10 @@ export const mockBackendResponse = async (
   });
 };
 
-export const mockResponseForAllNavbarLinkedSites = async (page: Page, responseMockFunction: (page: Page, apiLink: string) => Promise<void>): Promise<void> => {
+export const mockResponseForAllNavbarLinkedSites = async (
+  page: Page,
+  responseMockFunction: (page: Page, apiLink: string) => Promise<void>,
+): Promise<void> => {
   for (const element of navbarElementLinkPairs) {
     if (element.childElements) {
       for (const child of element.childElements) {

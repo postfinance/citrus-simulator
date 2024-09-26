@@ -2,11 +2,11 @@ import { expect, Page, test } from '@playwright/test';
 import {
   goToAllNavigationTabsAndOptionallyValidateContent,
   mockBackendResponse,
-  mockResponseForAllNavbarLinkedSites
+  mockResponseForAllNavbarLinkedSites,
 } from './helpers/helper-functions';
 
 test.beforeEach(async ({ page }) => {
-  await mockResponseForAllNavbarLinkedSites(page, mockEmptyResponseForApiURL)
+  await mockResponseForAllNavbarLinkedSites(page, mockEmptyResponseForApiURL);
   await page.goto('http://localhost:9000/');
 });
 
@@ -19,5 +19,5 @@ const verifyNoDataFoundBannerIsVisible = async (page: Page): Promise<void> => {
 };
 
 const mockEmptyResponseForApiURL = async (page: Page, apiLink: string): Promise<void> => {
-  await mockBackendResponse(page, apiLink, [], { 'x-total-count': '0' })
+  await mockBackendResponse(page, apiLink, [], { 'x-total-count': '0' });
 };
