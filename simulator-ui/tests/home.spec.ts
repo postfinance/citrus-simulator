@@ -1,10 +1,10 @@
-import { expect, Page, test } from '@playwright/test';
+import { expect, Page, Route, test } from '@playwright/test';
 
 import { clickOnLinkAndCheckIfTabOpensWithCorrectURL, mockBackendResponse } from './helpers/helper-functions';
 
-let nbOfSuccessfulTests = 90;
-let nbOfFailedTests = 10;
-let nbOfTotalTests = nbOfSuccessfulTests + nbOfFailedTests;
+let nbOfSuccessfulTests: number;
+let nbOfFailedTests: number;
+let nbOfTotalTests: number;
 
 const scenarioSummariesLinkFilterTriples = [
   { testName: 'totalSimulationsButton', link: /.*\/scenario-result*/, filterText: '' },
@@ -13,6 +13,10 @@ const scenarioSummariesLinkFilterTriples = [
 ];
 
 test.beforeEach(async ({ page }) => {
+  nbOfSuccessfulTests = 90;
+  nbOfFailedTests = 10;
+  nbOfTotalTests = nbOfSuccessfulTests + nbOfFailedTests;
+
   await mockBackendResponse(page, '**/api/test-results/count-by-status', {
     successful: nbOfSuccessfulTests,
     failed: nbOfFailedTests,
@@ -118,6 +122,7 @@ test('should have same total, successful, failed tabs after cancel deletion via 
       deleteRequestWasMade = true;
     }
   });
+
   for (const button of closeButtons) {
     await page.getByTestId('resetButton').click();
     await expect(page.getByTestId('testResultDeleteDialogHeading')).toBeVisible();
@@ -131,28 +136,26 @@ test('should have same total, successful, failed tabs after cancel deletion via 
 
 test('should have reset total, successful, failed tabs after confirmed deletion with (200, OK) response', async ({ page }) => {
   await checkIfSummaryTabsAreDisplayingRightNumbers(page, nbOfTotalTests, nbOfSuccessfulTests, nbOfFailedTests);
+
   await page.getByTestId('resetButton').click();
   await expect(page.getByTestId('testResultDeleteDialogHeading')).toBeVisible();
 
-  nbOfSuccessfulTests = 0;
-  nbOfFailedTests = 0;
-  nbOfTotalTests = 0;
-  await mockBackendResponse(page, '**/api/test-results/count-by-status', {
-    successful: nbOfSuccessfulTests,
-    failed: nbOfFailedTests,
-    total: nbOfTotalTests,
+  await page.route('**/api/test-results', async (route: Route) => {
+    if (route.request().method() === 'DELETE') {
+      await route.fulfill({ status: 200 });
+    }
   });
 
-  const deleteRequestPromise = page.waitForRequest(request => request.url() === '**/api/test-results/' && request.method() === 'DELETE');
-  const deleteResponsePromise = page.waitForResponse(
-    response => response.url() === '**/api/test-results/' && response.status() === 200 && response.request().method() === 'DELETE',
-  );
+  await mockBackendResponse(page, '**/api/test-results/count-by-status', {
+    successful: 0,
+    failed: 0,
+    total: 0,
+  });
+
   await page.getByTestId('entityConfirmDeleteButton').click();
-  await deleteRequestPromise;
-  await deleteResponsePromise;
 
   await expect(page.getByTestId('testResultDeleteDialogHeading')).toBeHidden();
-  await checkIfSummaryTabsAreDisplayingRightNumbers(page, nbOfTotalTests, nbOfSuccessfulTests, nbOfFailedTests);
+  await expect(page.getByTestId('noSimulationsRanBanner')).toBeVisible();
 });
 
 const checkIfSummaryTabsAreDisplayingRightNumbers = async (

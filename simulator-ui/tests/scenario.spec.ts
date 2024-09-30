@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+
 import { mockBackendResponse } from './helpers/helper-functions';
 
 const scenarioJson = [
@@ -166,6 +167,7 @@ test('should show error message if launch failed after click on the launch butto
 });
 
 test('should go to detail view of a scenario type MESSAGE_TRIGGERED check for content and and then go back', async ({ page }) => {
+  await mockBackendResponse(page, '**/api/scenarios/Default/parameters', parameterJson);
   const allVisibleDetailElements = [
     'scenarioDetailsHeading',
     'scenarioDetailsName',
@@ -173,12 +175,15 @@ test('should go to detail view of a scenario type MESSAGE_TRIGGERED check for co
     'scenarioDetailsEntitiesTable',
     'entityDetailsBackButton',
   ];
+
   await page.getByText('Default').click();
 
   await expect(page).toHaveURL(/.*scenario\/Default\/MESSAGE_TRIGGERED\/view*/);
+
   for (const element of allVisibleDetailElements) {
     await expect(page.getByTestId(element)).toBeVisible();
   }
+
   await page.getByTestId('entityDetailsBackButton').click();
   await expect(page).toHaveURL(/.*scenario/);
 });
@@ -195,12 +200,15 @@ test('should go to detail view of a scenario type STARTER check for content and 
     'scenarioDetailsEntitiesValue',
     'entityDetailsBackButton',
   ];
+
   await page.getByText('ByeStarter').click();
 
   await expect(page).toHaveURL(/.*scenario\/ByeStarter\/STARTER\/view*/);
+
   for (const element of allVisibleDetailElements) {
     await expect(page.getByTestId(element)).toBeVisible();
   }
+
   await page.getByTestId('entityDetailsBackButton').click();
   await expect(page).toHaveURL(/.*scenario/);
 });
