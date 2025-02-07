@@ -52,6 +52,7 @@ import static lombok.AccessLevel.NONE;
     indexes = {
         @Index(name = "idx_scenario_execution_scenario_name", columnList = "scenario_name"),
         @Index(name = "idx_scenario_execution_start_date", columnList = "start_date"),
+        @Index(name = "idx_scenario_execution_end_date", columnList = "end_date"),
     }
 )
 @ToString
