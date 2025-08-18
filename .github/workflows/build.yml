@@ -37,7 +37,7 @@ on:
       - 'NOTICE'
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       BUILD_OPTS: '--no-transfer-progress'
     steps:
@@ -48,7 +48,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Cache Maven packages
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
