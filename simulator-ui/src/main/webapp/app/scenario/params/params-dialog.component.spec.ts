@@ -1,5 +1,5 @@
-import {ParamsDialogComponent} from './params-dialog.component';
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import { ParamsDialogComponent } from './params-dialog.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 describe('ParamsDialogComponent', () => {
   let component: ParamsDialogComponent;
@@ -19,7 +19,7 @@ describe('ParamsDialogComponent', () => {
   });
 
   it('should call activeModal.close with params on launch', () => {
-    const mockParams = [{name: 'param1', value: 'value1'}];
+    const mockParams = [{ name: 'param1', value: 'value1' }];
     component.params = mockParams;
 
     component.launch();

@@ -3,7 +3,7 @@ import { HttpHeaders } from '@angular/common/http';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 
-import {combineLatest, debounceTime, Observable, of, Subscription, switchMap, tap} from 'rxjs';
+import { combineLatest, debounceTime, Observable, of, Subscription, switchMap, tap } from 'rxjs';
 
 import { DEBOUNCE_TIME_MILLIS } from 'app/config/input.constants';
 import { ASC, DEFAULT_SORT_DATA, DESC, EntityOrder, SORT, toEntityOrder } from 'app/config/navigation.constants';
@@ -17,14 +17,14 @@ import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'ap
 import { FilterComponent, IFilterOption } from 'app/shared/filter';
 import { ItemCountComponent } from 'app/shared/pagination';
 import { SortByDirective, SortDirective } from 'app/shared/sort';
-import {ParamsDialogComponent} from '../params/params-dialog.component';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import { ParamsDialogComponent } from '../params/params-dialog.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { EntityArrayResponseType, ScenarioService } from '../service/scenario.service';
 import { IScenario } from '../scenario.model';
 
 import { navigateToWithPagingInformation } from '../../entities/navigation-util';
-import {IScenarioParameter} from "../../entities/scenario-parameter/scenario-parameter.model";
+import { IScenarioParameter } from '../../entities/scenario-parameter/scenario-parameter.model';
 
 type ScenarioFilter = {
   nameContains: string | undefined;
@@ -77,7 +77,7 @@ export class ScenarioComponent implements OnDestroy, OnInit {
     private ngZone: NgZone,
     private userPreferenceService: UserPreferenceService,
     private changeDetectorRef: ChangeDetectorRef,
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) {}
 
   trackId = (_index: number, item: IScenario): string => this.scenarioService.getScenarioIdentifier(item);
@@ -88,7 +88,7 @@ export class ScenarioComponent implements OnDestroy, OnInit {
     this.entityOrder = this.userPreferenceService.getEntityOrder(this.USER_PREFERENCES_KEY);
     this.ascending = this.entityOrder === EntityOrder.ASCENDING;
 
-    this.navigateToWithComponentValues({predicate: this.predicate, ascending: this.ascending});
+    this.navigateToWithComponentValues({ predicate: this.predicate, ascending: this.ascending });
     this.load();
     this.changeDetectorRef.detectChanges();
 
@@ -125,7 +125,7 @@ export class ScenarioComponent implements OnDestroy, OnInit {
     this.applyFilter();
   }
 
-  protected navigateToWithComponentValues({predicate, ascending}: { predicate: string; ascending: boolean }): void {
+  protected navigateToWithComponentValues({ predicate, ascending }: { predicate: string; ascending: boolean }): void {
     this.updateUserPreferences(predicate, ascending);
     this.handleNavigation(this.page, predicate, ascending);
   }
@@ -204,44 +204,47 @@ export class ScenarioComponent implements OnDestroy, OnInit {
   }
 
   protected launch(scenario: IScenario): void {
-    this.scenarioService.findParameters(scenario.name).pipe(
-      switchMap(response => {
-        const parameters = response.body;
-        if (Array.isArray(parameters) && parameters.length > 0) {
-          const modalRef = this.modalService.open(ParamsDialogComponent, {size: 'lg'});
-          modalRef.componentInstance.params = parameters;
+    this.scenarioService
+      .findParameters(scenario.name)
+      .pipe(
+        switchMap(response => {
+          const parameters = response.body;
+          if (Array.isArray(parameters) && parameters.length > 0) {
+            const modalRef = this.modalService.open(ParamsDialogComponent, { size: 'lg' });
+            modalRef.componentInstance.params = parameters;
 
-          return modalRef.result.then(
-            (resultParams: IScenarioParameter[]) => resultParams,
-            () => null // Return null if modal is dismissed
-          );
-        }
-        return of(null); // No parameters, proceed with empty array
-      }),
-      switchMap(params => {
-        if (params === null) {
-          // Modal dismissed, do not proceed with launch
-          return of(null);
-        }
-        return this.scenarioService.launch(scenario.name, params ?? []);
-      })
-    ).subscribe({
-      next: scenarioExecutionId => {
-        if (scenarioExecutionId) {
+            return modalRef.result.then(
+              (resultParams: IScenarioParameter[]) => resultParams,
+              () => null, // Return null if modal is dismissed
+            );
+          }
+          return of(null); // No parameters, proceed with empty array
+        }),
+        switchMap(params => {
+          if (params === null) {
+            // Modal dismissed, do not proceed with launch
+            return of(null);
+          }
+          return this.scenarioService.launch(scenario.name, params);
+        }),
+      )
+      .subscribe({
+        next: scenarioExecutionId => {
+          if (scenarioExecutionId) {
+            this.alertService.addAlert({
+              type: 'success',
+              translationKey: 'citrusSimulatorApp.scenario.action.launchedSuccessfully',
+              translationParams: { scenarioExecutionId },
+            });
+          }
+        },
+        error: () => {
           this.alertService.addAlert({
-            type: 'success',
-            translationKey: 'citrusSimulatorApp.scenario.action.launchedSuccessfully',
-            translationParams: {scenarioExecutionId},
+            type: 'danger',
+            translationKey: 'citrusSimulatorApp.scenario.action.launchFailed',
           });
-        }
-      },
-      error: () => {
-        this.alertService.addAlert({
-          type: 'danger',
-          translationKey: 'citrusSimulatorApp.scenario.action.launchFailed',
-        });
-      },
-    });
+        },
+      });
   }
 
   protected pageSizeChanged(itemsPerPage: number): void {

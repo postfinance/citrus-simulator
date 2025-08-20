@@ -24,8 +24,8 @@ import { ScenarioService } from '../service/scenario.service';
 import { ScenarioComponent } from './scenario.component';
 
 import SpyInstance = jest.SpyInstance;
-import {NgbModalRef} from "@ng-bootstrap/ng-bootstrap/modal/modal-ref";
-import {IScenarioParameter} from "../../entities/scenario-parameter/scenario-parameter.model";
+import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap/modal/modal-ref';
+import { IScenarioParameter } from '../../entities/scenario-parameter/scenario-parameter.model';
 
 describe('Scenario Management Component', () => {
   let activatedRoute: ActivatedRoute;
@@ -365,21 +365,16 @@ describe('Scenario Management Component', () => {
         value: 'default',
         createdDate: Date.now(),
         lastModifiedDate: null,
-        scenarioExecution: null,
       },
     ];
 
     const mockModalRef = {
-      result: Promise.resolve([
-        {parameterId: 1, name: 'TEXTBOX', value: 'user-input'},
-      ]),
-      componentInstance: {params: mockParams},
+      result: Promise.resolve([{ parameterId: 1, name: 'TEXTBOX', value: 'user-input' }]),
+      componentInstance: { params: mockParams },
     } as NgbModalRef;
 
     it('triggers scenario execution in backend', fakeAsync(() => {
-      jest.spyOn(service, 'findParameters').mockReturnValue(
-        of(new HttpResponse({body: mockParams}))
-      );
+      jest.spyOn(service, 'findParameters').mockReturnValue(of(new HttpResponse({ body: mockParams })));
 
       jest.spyOn(component['modalService'], 'open').mockReturnValue(mockModalRef as any);
 
@@ -388,24 +383,21 @@ describe('Scenario Management Component', () => {
       service.launch = jest.fn().mockReturnValue(of(new HttpResponse({ body: scenarioId })));
 
       // @ts-ignore: Access private function for testing
-      component['launch']({name});
+      component['launch']({ name });
 
       // Needed due combination of promises and observables
       tick();
 
-      expect(service.launch).toHaveBeenCalledWith(name, [
-        {parameterId: 1, name: 'TEXTBOX', value: 'user-input'},
-      ]);
+      expect(service.launch).toHaveBeenCalledWith(name, [{ parameterId: 1, name: 'TEXTBOX', value: 'user-input' }]);
       expect(alertService.addAlert).toHaveBeenCalledWith({
         type: 'success',
         translationKey: 'citrusSimulatorApp.scenario.action.launchedSuccessfully',
-        translationParams: {scenarioExecutionId: new HttpResponse({body: scenarioId})},
+        translationParams: { scenarioExecutionId: new HttpResponse({ body: scenarioId }) },
       });
     }));
 
     it('handles failures', fakeAsync(() => {
-
-      jest.spyOn(service, 'findParameters').mockReturnValue(of(new HttpResponse({body: mockParams})));
+      jest.spyOn(service, 'findParameters').mockReturnValue(of(new HttpResponse({ body: mockParams })));
 
       jest.spyOn(component['modalService'], 'open').mockReturnValue(mockModalRef as any);
 
@@ -416,7 +408,7 @@ describe('Scenario Management Component', () => {
       component.launch({ name });
       tick();
 
-      expect(service.launch).toHaveBeenCalledWith(name, [{"name": "TEXTBOX", "parameterId": 1, "value": "user-input"}]);
+      expect(service.launch).toHaveBeenCalledWith(name, [{ name: 'TEXTBOX', parameterId: 1, value: 'user-input' }]);
       expect(alertService.addAlert).toHaveBeenCalledWith({
         type: 'danger',
         translationKey: 'citrusSimulatorApp.scenario.action.launchFailed',
@@ -424,13 +416,13 @@ describe('Scenario Management Component', () => {
     }));
 
     it('should not launch if modal is dismissed', fakeAsync(() => {
-      jest.spyOn(service, 'findParameters').mockReturnValue(of(new HttpResponse({body: mockParams})));
+      jest.spyOn(service, 'findParameters').mockReturnValue(of(new HttpResponse({ body: mockParams })));
 
       // Mock modal dismissal
       const mockModalRefRejection = {
         // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         result: Promise.reject('dismissed'),
-        componentInstance: {params: mockParams},
+        componentInstance: { params: mockParams },
       } as NgbModalRef;
 
       jest.spyOn(component['modalService'], 'open').mockReturnValue(mockModalRefRejection as any);
@@ -438,7 +430,7 @@ describe('Scenario Management Component', () => {
       // @ts-ignore: Access private function for testing
       const launchSpy = jest.spyOn(service, 'launch');
 
-      component['launch']({name});
+      component['launch']({ name });
       tick();
 
       expect(launchSpy).not.toHaveBeenCalled();
