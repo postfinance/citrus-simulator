@@ -16,6 +16,7 @@
 
 package org.citrusframework.simulator.scenario;
 
+import jakarta.annotation.Nullable;
 import org.citrusframework.context.TestContext;
 import org.citrusframework.endpoint.AbstractEndpoint;
 import org.citrusframework.message.Message;
@@ -31,19 +32,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import static java.lang.Thread.currentThread;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class ScenarioEndpoint extends AbstractEndpoint implements Producer, Consumer {
 
-    /**
-     * Internal im memory message channel
-     */
-    private final LinkedBlockingQueue<Message> channel = new LinkedBlockingQueue<>();
+    private static final String RESPONSE_FUTURE_VARIABLE_NAME = "scenario.response.future";
 
     /**
-     * Stack of response futures to complete
+     * Internal in memory message channel
      */
-    private final Stack<CompletableFuture<Message>> responseFutures = new Stack<>();
+    private final LinkedBlockingQueue<Message> channel = new LinkedBlockingQueue<>();
 
     /**
      * Default constructor using endpoint configuration.
@@ -56,11 +55,9 @@ public class ScenarioEndpoint extends AbstractEndpoint implements Producer, Cons
 
     /**
      * Adds new message for direct message consumption.
-     *
-     * @param request
      */
     public void add(Message request, CompletableFuture<Message> future) {
-        responseFutures.push(future);
+        request.setHeader(RESPONSE_FUTURE_VARIABLE_NAME, future);
         channel.add(request);
     }
 
@@ -88,6 +85,11 @@ public class ScenarioEndpoint extends AbstractEndpoint implements Producer, Cons
                 throw new SimulatorException("Failed to receive scenario inbound message");
             }
 
+            Object responseFuture = message.getHeader(RESPONSE_FUTURE_VARIABLE_NAME);
+            if (responseFuture instanceof CompletableFuture) {
+                context.setVariable(RESPONSE_FUTURE_VARIABLE_NAME, responseFuture);
+            }
+
             messageReceived(message, context);
 
             return message;
@@ -100,18 +102,22 @@ public class ScenarioEndpoint extends AbstractEndpoint implements Producer, Cons
     @Override
     public void send(Message message, TestContext context) {
         messageSent(message, context);
-        completeNextResponseFuture(message);
+        completeResponseFuture(message, context);
     }
 
-    void fail(Throwable e) {
-        completeNextResponseFuture(new SimulationFailedUnexpectedlyException(e));
+    void fail(Throwable e, @Nullable TestContext context) {
+        if (nonNull(context)) {
+            completeResponseFuture(new SimulationFailedUnexpectedlyException(e), context);
+        }
     }
 
-    private void completeNextResponseFuture(Message message) {
-        if (responseFutures.isEmpty()) {
-            throw new SimulatorException("Failed to process scenario response message - missing response consumer!");
+    private void completeResponseFuture(Message message, TestContext context) {
+        Object responseFuture = context.getVariable(RESPONSE_FUTURE_VARIABLE_NAME);
+
+        if (responseFuture instanceof CompletableFuture) {
+            ((CompletableFuture<Message>) responseFuture).complete(message);
         } else {
-            responseFutures.pop().complete(message);
+            throw new SimulatorException("Failed to process scenario response message - missing response consumer!");
         }
     }
 

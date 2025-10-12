@@ -42,19 +42,21 @@ class ScenarioEndpointTest {
     class Fail {
 
         @Test
-        void throwsExceptionWhenNoResponseFuturePresent() {
-            assertThatThrownBy(() -> fixture.fail(null))
-                .isInstanceOf(SimulatorException.class)
-                .hasMessage("Failed to process scenario response message - missing response consumer!");
+        void doesNotThrowExceptionWhenNoResponseFutureIsPresent() {
+            fixture.fail(null, null);
         }
 
         @Test
         void completesResponseFutureIfOneIsPresent() {
-            CompletableFuture<Message> responseFuture = new CompletableFuture<>();
-            fixture.add(mock(Message.class), responseFuture);
+            var responseFuture = new CompletableFuture<Message>();
+            var request = mock(Message.class);
+            fixture.add(request, responseFuture);
 
             var cause = mock(Throwable.class);
-            fixture.fail(cause);
+            var testContext = new TestContext();
+            fixture.receive(testContext);
+
+            fixture.fail(cause, testContext);
 
             assertThat(responseFuture)
                 .isCompleted();
